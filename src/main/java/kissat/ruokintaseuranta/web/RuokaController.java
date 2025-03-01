@@ -79,7 +79,4 @@ public ResponseEntity<Void> poistaRuoka(@PathVariable("id") Long ruokaId) {
         }
 }
 
-
-
-
 }
