@@ -1,53 +1,42 @@
+-- Ateria-taulu
 CREATE TABLE Ateria (
-    ateriaId INT PRIMARY KEY AUTO_INCREMENT,
-    ateriaNimi VARCHAR(50) NOT NULL,
+    ateriaId SERIAL PRIMARY KEY,
+    ateriaNimi VARCHAR(50) NOT NULL
 );
 
-INSERT INTO Ateria (ateriaNimi)
-VALUES  ('Aamuruoka'),
-        ('Iltaruoka');
-
+-- Raakaaine-taulu
 CREATE TABLE Raakaaine (
-    raakaaineId INT PRIMARY KEY AUTO_INCREMENT,
-    raakaaineNimi VARCHAR(50) NOT NULL,
+    raakaaineId SERIAL PRIMARY KEY,
+    raakaaineNimi VARCHAR(50) NOT NULL
 );
 
-INSERT INTO Raakaaine (raakaaineNimi)
-VALUES  ('Kana'),
-        ('Lohi'),
-        ('Kalkkuna'),
-        (Turska);
-
+-- Valmistaja-taulu
 CREATE TABLE Valmistaja (
-    valmistajaId INT PRIMARY KEY AUTO_INCREMENT,
-    valmistajaNimi VARCHAR(200) NOT NULL,
+    valmistajaId SERIAL PRIMARY KEY,
+    valmistajaNimi VARCHAR(200) NOT NULL
 );
 
-INSERT INTO Valmistaja (valmistajaNimi)
-VALUES  ('PrimaCat'),
-        ('Nutrima'),
-        ('Tiikeri'),
-        ('Canagan');
-
-
+-- Ruoka-taulu
 CREATE TABLE Ruoka (
-    ruokaId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ruokaId BIGSERIAL PRIMARY KEY,
     ruokaNimi VARCHAR(500) NOT NULL,
-    ruokaPisteet DOUBLE NOT NULL,
+    ruokaPisteet DOUBLE PRECISION NOT NULL,
     valmistajaId BIGINT,
     FOREIGN KEY (valmistajaId) REFERENCES Valmistaja(valmistajaId)
 );
 
+-- Ruoka_Raakaaine-taulu (monen-moneen -suhde)
 CREATE TABLE Ruoka_Raakaaine (
     ruokaId BIGINT,
-    raakaAineId BIGINT,
-    PRIMARY KEY (ruokaId, raakaAineId),
+    raakaaineId BIGINT,
+    PRIMARY KEY (ruokaId, raakaaineId),
     FOREIGN KEY (ruokaId) REFERENCES Ruoka(ruokaId),
-    FOREIGN KEY (raakaAineId) REFERENCES Raakaaine(raakaAineId)
+    FOREIGN KEY (raakaaineId) REFERENCES Raakaaine(raakaaineId)
 );
 
+-- Ruokinta-taulu
 CREATE TABLE Ruokinta (
-    ruokintaId BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ruokintaId BIGSERIAL PRIMARY KEY,
     ruokintaAika DATE NOT NULL,
     taimiMaistui BOOLEAN NOT NULL,
     lempiMaistui BOOLEAN NOT NULL,
@@ -56,4 +45,3 @@ CREATE TABLE Ruokinta (
     FOREIGN KEY (ateriaId) REFERENCES Ateria(ateriaId),
     FOREIGN KEY (ruokaId) REFERENCES Ruoka(ruokaId)
 );
-
