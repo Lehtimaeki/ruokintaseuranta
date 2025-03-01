@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kissojen ruokailuseuranta</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+</head>
+<body>
+    <h1>Ruokintaseuranta</h1>
+
+    <!-- Lomake Ruokinnan lisäämiseen -->
+    <h2>Lisää ruokailu</h2>
+    <form th:action="@{/ruokinnat}" method="post">
+        <label for="ruokintaAika">Ruokailupäivä:</label>
+        <input type="date" id="ruokintaAika" name="ruokintaAika" required>
+
+        <label for="ateria">Ateria:</label>
+        <select id="ateria" name="ateria" required>
+            <option th:each="ateria : ${ateriat}" th:value="${ateria.id}" th:text="${ateria.nimi}"></option>
+        </select>
+
+        <label for="ruoka">Ruoka:</label>
+        <select id="ruoka" name="ruoka" required>
+            <option th:each="ruoka : ${ruoat}" th:value="${ruoka.id}" th:text="${ruoka.nimi}"></option>
+        </select>
+
+        <label for="taimiMaistui">Maistuiko Taimille:</label>
+        <input type="checkbox" id="taimiMaistui" name="taimiMaistui">
+        
+        <label for="lempiMaistui">Maistuiko Lempille:</label>
+        <input type="checkbox" id="lempiMaistui" name="lempiMaistui">
+
+        <button type="submit">Lisää</button>
+    </form>
+
+    <!-- Lista Ruokailuista -->
+    <h2>Kaikki ruokailut</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ruokailupäivä</th>
+                <th>Ateria</th>
+                <th>Ruoka</th>
+                <th>Maistuiko Taimille</th>
+                <th>Maistuiko Lempille</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</body>
+</html>
