@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kissojen ruokintaseuranta</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+</head>
+<body>
+    <h1>Ruokintaseuranta</h1>
+
+    <!-- Lomake Ruoan lisäämiseen -->
+    <h2>Lisää uusi ruoka</h2>
+    <form th:action="@{/ruoat}" method="post">
+        <label for="ruokaNimi">Ruoka Nimi:</label>
+        <input type="text" id="ruokaNimi" name="ruokaNimi" required>
+        <label for="valmistaja">Valmistaja:</label>
+        <input type="text" id="valmistaja" name="valmistaja" required>
+        <label for="raakaaineet">Raaka-aineet:</label>
+        <input type="text" id="raakaaineet" name="raakaaineet" required>
+        <button type="submit">Lisää</button>
+    </form>
+
+    <!-- List of all Ruoka -->
+    <h2>Kaikki ruoat</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ruoka Nimi</th>
+                <th>Valmistaja</th>
+                <th>Raaka-aineet</th>
+                <th>Toiminnot</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ruoka : ${ruoat}">
+                <td th:text="${ruoka.ruokaId}">1</td>
+                <td th:text="${ruoka.ruokaNimi}">Kana</td>
+                <td th:text="${ruoka.valmistaja.valmistajaNimi}">Valmistaja</td>
+                <td th:text="${#strings.join(ruoka.raakaaineet, ', ')}">Raaka-aineet</td>
+                <td>
+                    <form th:action="@{/ruoat/{id}(id=${ruoka.ruokaId})}" method="post" th:method="delete">
+                        <button type="submit">Poista</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
