@@ -50,16 +50,18 @@ public class Ruoka {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long ruokaId;
     private String ruokaNimi;
+    private double ruokaPisteet;
 
     public Ruoka () {
 
     }
 
-    public Ruoka(String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet) {
+    public Ruoka(String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet, double ruokaPisteet) {
         super();
         this.ruokaNimi = ruokaNimi;
         this.valmistaja = valmistaja;
         this.raakaaineet = raakaaineet;
+        this.ruokaPisteet = 0;
     }
 
     public Long getRuokaId() {
@@ -78,11 +80,24 @@ public class Ruoka {
         this.ruokaNimi = ruokaNimi;
     }
 
+    public double getRuokaPisteet() {
+        return ruokaPisteet;
+    }
+
+    public void setRuokaPisteet(double ruokaPisteet) {
+        this.ruokaPisteet = ruokaPisteet;
+    }
+
+    public void addRuokaPisteet(double ruokaPisteet) {
+        this.ruokaPisteet += ruokaPisteet;
+    }
+
     @Override
     public String toString() {
         return "Ruoka{" +
                 "ruokaId=" + ruokaId +
                 ", ruokaNimi='" + ruokaNimi + '\'' +
+                ", ruokaPisteet=" + ruokaPisteet +
                 '}';
     }
 
