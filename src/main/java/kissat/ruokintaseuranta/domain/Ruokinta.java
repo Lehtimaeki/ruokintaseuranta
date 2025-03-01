@@ -3,6 +3,8 @@ package kissat.ruokintaseuranta.domain;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,13 +14,18 @@ import jakarta.persistence.JoinColumn;
 
 
 @Entity
+@Table(name="ruokinta")
 public class Ruokinta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="ruokintaid")
     private Long ruokintaId;
+    @Column(name="ruokintaaika")
     private LocalDate ruokintaAika;
+    @Column(name="taimimaistui")
     private boolean taimiMaistui;
+    @Column(name="lempimaistui")
     private boolean lempiMaistui;
 
     @ManyToOne(fetch = FetchType.LAZY)

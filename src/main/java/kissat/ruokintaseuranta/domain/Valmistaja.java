@@ -3,6 +3,8 @@ package kissat.ruokintaseuranta.domain;
 import java.util.Set;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,12 +15,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Entity
+@Table(name="valmistaja")
 @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Valmistaja {
 
     @Id
     @GeneratedValue (strategy=GenerationType.AUTO)
+    @Column(name="valmistajaid")
     private Long valmistajaId;
+    @Column(name="valmistajanimi")
     private String valmistajaNimi;
 
     @JsonIgnore

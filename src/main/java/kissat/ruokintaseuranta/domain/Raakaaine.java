@@ -1,6 +1,8 @@
 package kissat.ruokintaseuranta.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,6 +11,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 @Entity
+@Table(name="raakaaine")
 public class Raakaaine {
 
     @ManyToMany(mappedBy = "raakaaineet")
@@ -22,7 +25,9 @@ public class Raakaaine {
 
     @Id
     @GeneratedValue (strategy=GenerationType.AUTO)
+    @Column(name="raakaaineid")
     private Long raakaaineId;
+    @Column(name="raakaainenimi")
     private String raakaaineNimi;
 
     public Raakaaine () {

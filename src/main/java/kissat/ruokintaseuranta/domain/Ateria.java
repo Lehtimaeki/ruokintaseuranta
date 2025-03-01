@@ -5,6 +5,8 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,11 +14,15 @@ import jakarta.persistence.OneToMany;
 
 
 @Entity
+@Table(name="ateria")
 public class Ateria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="ateriaid")
     private Long ateriaId;
+
+    @Column(name="aterianimi")
     private String ateriaNimi;
 
     @JsonIgnore

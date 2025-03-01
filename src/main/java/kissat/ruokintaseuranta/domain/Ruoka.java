@@ -6,6 +6,8 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +19,7 @@ import jakarta.persistence.OneToMany;
 
 
 @Entity
+@Table(name="ruoka")
 public class Ruoka {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,8 +51,11 @@ public class Ruoka {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="ruokaid")
     private Long ruokaId;
+    @Column(name="ruokanimi")
     private String ruokaNimi;
+    @Column(name="ruokapisteet")
     private double ruokaPisteet;
 
     public Ruoka () {
