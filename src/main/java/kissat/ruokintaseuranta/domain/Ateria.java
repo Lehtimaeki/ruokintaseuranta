@@ -18,11 +18,11 @@ import jakarta.persistence.OneToMany;
 public class Ateria {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="ateriaid")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ateriaId")
     private Long ateriaId;
 
-    @Column(name="aterianimi")
+    @Column(name="aterianimi", nullable = false)
     private String ateriaNimi;
 
     @JsonIgnore
@@ -52,6 +52,14 @@ public class Ateria {
 
     public void setAteriaNimi(String ateriaNimi) {
         this.ateriaNimi = ateriaNimi;
+    }
+
+    public Set<Ruokinta> getRuokinnat() {
+        return ruokinnat;
+    }
+
+    public void setRuokinnat(Set<Ruokinta> ruokinnat) {
+        this.ruokinnat = ruokinnat;
     }
 
     @Override

@@ -24,9 +24,9 @@ public class Raakaaine {
     }
 
     @Id
-    @GeneratedValue (strategy=GenerationType.AUTO)
-    @Column(name="raakaaineid")
+    @GeneratedValue (strategy=GenerationType.IDENTITY)
     private Long raakaaineId;
+    
     @Column(name="raakaainenimi")
     private String raakaaineNimi;
 

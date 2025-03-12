@@ -18,8 +18,7 @@ import jakarta.persistence.JoinColumn;
 public class Ruokinta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="ruokintaid")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ruokintaId;
     @Column(name="ruokintaaika")
     private LocalDate ruokintaAika;
@@ -64,6 +63,22 @@ public class Ruokinta {
 
     public void setRuokintaAika(LocalDate ruokintaAika) {
         this.ruokintaAika = ruokintaAika;
+    }
+
+    public Ateria getAteria() {
+        return ateria;
+    }
+
+    public void setAteria (Ateria ateria) {
+        this.ateria = ateria;
+    }
+
+    public Ruoka getRuoka() {
+        return ruoka;
+    }
+
+    public void setRuoka (Ruoka ruoka) {
+        this.ruoka = ruoka;
     }
 
     public boolean isTaimiMaistui() {

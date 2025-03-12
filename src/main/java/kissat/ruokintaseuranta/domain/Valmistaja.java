@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Valmistaja {
 
     @Id
-    @GeneratedValue (strategy=GenerationType.AUTO)
-    @Column(name="valmistajaid")
+    @GeneratedValue (strategy=GenerationType.IDENTITY)
     private Long valmistajaId;
     @Column(name="valmistajanimi")
     private String valmistajaNimi;

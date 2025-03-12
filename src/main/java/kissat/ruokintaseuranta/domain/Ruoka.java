@@ -50,8 +50,7 @@ public class Ruoka {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="ruokaid")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ruokaId;
     @Column(name="ruokanimi")
     private String ruokaNimi;
