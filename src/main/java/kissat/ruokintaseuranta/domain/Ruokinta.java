@@ -12,27 +12,30 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 
-
 @Entity
-@Table(name="ruokinta")
+@Table(name="Ruokinta")
 public class Ruokinta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ruokinta_id")
     private Long ruokintaId;
-    @Column(name="ruokintaaika")
+    
+    @Column(name="ruokinta_aika", nullable = false)
     private LocalDate ruokintaAika;
-    @Column(name="taimimaistui")
+    
+    @Column(name="taimi_maistui", nullable = false)
     private boolean taimiMaistui;
-    @Column(name="lempimaistui")
+    
+    @Column(name="lempi_maistui", nullable = false)
     private boolean lempiMaistui;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ateria")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ateria_id")
     private Ateria ateria;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ruoka")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ruoka_id")
     private Ruoka ruoka;
 
     public Ruokinta () {
@@ -100,6 +103,7 @@ public class Ruokinta {
     }
 
     private void paivitaRuokaPisteet() {
+        if (this.ruoka != null) {
         double ruokaPisteet = 0;
         if (taimiMaistui && lempiMaistui) {
             ruokaPisteet = 1;
@@ -108,6 +112,7 @@ public class Ruokinta {
         }
         this.ruoka.addRuokaPisteet(ruokaPisteet);
     }
+}
 
     @Override
     public String toString() {

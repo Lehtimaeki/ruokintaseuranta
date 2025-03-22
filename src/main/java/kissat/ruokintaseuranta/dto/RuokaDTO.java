@@ -1,13 +1,25 @@
 package kissat.ruokintaseuranta.dto;
 
-import java.util.List;
+import java.util.Set;
 
 public class RuokaDTO {
+
     private Long ruokaId;
     private String ruokaNimi;
-    private List<String> raakaaineet;
-    private String valmistaja;
     private double ruokaPisteet;
+    private Long valmistajaId;
+    private Set<Long> raakaaineIds;
+
+    public RuokaDTO() {
+    }
+
+    public RuokaDTO(Long ruokaId, String ruokaNimi, double ruokaPisteet, Long valmistajaId, Set<Long> raakaaineIds) {
+        this.ruokaId = ruokaId;
+        this.ruokaNimi = ruokaNimi;
+        this.ruokaPisteet = ruokaPisteet;
+        this.valmistajaId = valmistajaId;
+        this.raakaaineIds = raakaaineIds;
+    }
 
     public Long getRuokaId() {
         return ruokaId;
@@ -25,27 +37,38 @@ public class RuokaDTO {
         this.ruokaNimi = ruokaNimi;
     }
 
-    public List<String> getRaakaaineet() {
-        return raakaaineet;
-    }
-
-    public void setRaakaaineet(List<String> raakaaineet) {
-        this.raakaaineet = raakaaineet;
-    }
-
-    public String getValmistaja() {
-        return valmistaja;
-    }
-
-    public void setValmistaja(String valmistaja) {
-        this.valmistaja = valmistaja;
-    }
-
     public double getRuokaPisteet() {
         return ruokaPisteet;
     }
 
     public void setRuokaPisteet(double ruokaPisteet) {
         this.ruokaPisteet = ruokaPisteet;
+    }
+
+    public Long getValmistajaId() {
+        return valmistajaId;
+    }
+
+    public void setValmistajaId(Long valmistajaId) {
+        this.valmistajaId = valmistajaId;
+    }
+
+    public Set<Long> getRaakaaineIds() {
+        return raakaaineIds;
+    }
+
+    public void setRaakaaineIds(Set<Long> raakaaineIds) {
+        this.raakaaineIds = raakaaineIds;
+    }
+
+    @Override
+    public String toString() {
+        return "RuokaDTO{" +
+                "ruokaId=" + ruokaId +
+                ", ruokaNimi='" + ruokaNimi + '\'' +
+                ", ruokaPisteet=" + ruokaPisteet +
+                ", valmistajaId=" + valmistajaId +
+                ", raakaaineIds=" + raakaaineIds +
+                '}';
     }
 }

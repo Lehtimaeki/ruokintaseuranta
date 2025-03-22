@@ -9,70 +9,83 @@ DROP TABLE IF EXISTS Ateria CASCADE;
 
 -- Ateria-taulu
 CREATE TABLE Ateria (
-    ateriaId SERIAL PRIMARY KEY,
-    ateriaNimi VARCHAR(50) NOT NULL
+    ateria_id SERIAL PRIMARY KEY,
+    ateria_nimi VARCHAR(50) NOT NULL
 );
 
 -- Raakaaine-taulu
 CREATE TABLE Raakaaine (
-    raakaaineId SERIAL PRIMARY KEY,
-    raakaaineNimi VARCHAR(50) NOT NULL
+    raakaaine_id SERIAL PRIMARY KEY,
+    raakaaine_nimi VARCHAR(50) NOT NULL
 );
 
 -- Valmistaja-taulu
 CREATE TABLE Valmistaja (
-    valmistajaId SERIAL PRIMARY KEY,
-    valmistajaNimi VARCHAR(200) NOT NULL
+    valmistaja_id SERIAL PRIMARY KEY,
+    valmistaja_nimi VARCHAR(200) NOT NULL
 );
 
 -- Ruoka-taulu
 CREATE TABLE Ruoka (
-    ruokaId SERIAL PRIMARY KEY,
-    ruokaNimi VARCHAR(500) NOT NULL,
-    ruokaPisteet DOUBLE PRECISION NOT NULL,
-    valmistajaId BIGINT,
-    FOREIGN KEY (valmistajaId) REFERENCES Valmistaja(valmistajaId) ON DELETE CASCADE ON UPDATE CASCADE
+    ruoka_id SERIAL PRIMARY KEY,
+    ruoka_nimi VARCHAR(500) NOT NULL,
+    ruoka_pisteet DOUBLE PRECISION NOT NULL,
+    valmistaja_id BIGINT,
+    FOREIGN KEY (valmistaja_id) REFERENCES Valmistaja(valmistaja_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Ruoka_Raakaaine-taulu (monen-moneen -suhde)
 CREATE TABLE Ruoka_Raakaaine (
-    ruokaId BIGINT,
-    raakaaineId BIGINT,
-    PRIMARY KEY (ruokaId, raakaaineId),
-    FOREIGN KEY (ruokaId) REFERENCES Ruoka(ruokaId) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (raakaaineId) REFERENCES Raakaaine(raakaaineId) ON DELETE CASCADE ON UPDATE CASCADE
+    ruoka_id BIGINT,
+    raakaaine_id BIGINT,
+    PRIMARY KEY (ruoka_id, raakaaine_id),
+    FOREIGN KEY (ruoka_id) REFERENCES Ruoka(ruoka_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (raakaaine_id) REFERENCES Raakaaine(raakaaine_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Ruokinta-taulu
 CREATE TABLE Ruokinta (
-    ruokintaId SERIAL PRIMARY KEY,
-    ruokintaAika DATE NOT NULL,
-    taimiMaistui BOOLEAN NOT NULL,
-    lempiMaistui BOOLEAN NOT NULL,
-    ateriaId BIGINT,
-    ruokaId BIGINT,
-    FOREIGN KEY (ateriaId) REFERENCES Ateria(ateriaId),
-    FOREIGN KEY (ruokaId) REFERENCES Ruoka(ruokaId)
+    ruokinta_id SERIAL PRIMARY KEY,
+    ruokinta_aika DATE NOT NULL,
+    taimi_maistui BOOLEAN NOT NULL,
+    lempi_maistui BOOLEAN NOT NULL,
+    ateria_id BIGINT,
+    ruoka_id BIGINT,
+    FOREIGN KEY (ateria_id) REFERENCES Ateria(ateria_id),
+    FOREIGN KEY (ruoka_id) REFERENCES Ruoka(ruoka_id)
 );
 
--- Lisää esimerkkidataa Ateria-tauluun
-INSERT INTO Ateria (ateriaNimi) VALUES ('Aamuruoka');
-INSERT INTO Ateria (ateriaNimi) VALUES ('Iltaruoka');
+--Lisää esimerkkidataa Ateria-tauluun
+INSERT INTO Ateria (ateria_nimi) VALUES ('Aamuruoka');
+INSERT INTO Ateria (ateria_nimi) VALUES ('Iltaruoka');
+INSERT INTO Ateria (ateria_nimi) VALUES ('Päiväruoka');
 
 -- Lisää esimerkkidataa Raakaaine-tauluun
-INSERT INTO Raakaaine (raakaaineNimi) VALUES ('Kana');
-INSERT INTO Raakaaine (raakaaineNimi) VALUES ('Kalkkuna');
+INSERT INTO Raakaaine (raakaaine_nimi) VALUES ('Kana');
+INSERT INTO Raakaaine (raakaaine_nimi) VALUES ('Kalkkuna');
+INSERT INTO Raakaaine (raakaaine_nimi) VALUES ('Lohi');
+INSERT INTO Raakaaine (raakaaine_nimi) VALUES ('Nauta');
+INSERT INTO Raakaaine (raakaaine_nimi) VALUES ('Sika');
+INSERT INTO Raakaaine (raakaaine_nimi) VALUES ('Turska');
+INSERT INTO Raakaaine (raakaaine_nimi) VALUES ('Siipikarja');
 
 -- Lisää esimerkkidataa Valmistaja-tauluun
-INSERT INTO Valmistaja (valmistajaNimi) VALUES ('Coshida');
+INSERT INTO Valmistaja (valmistaja_nimi) VALUES ('Coshida');
+INSERT INTO Valmistaja (valmistaja_nimi) VALUES ('PrimaCat');
+INSERT INTO Valmistaja (valmistaja_nimi) VALUES ('Pure Natural');
+INSERT INTO Valmistaja (valmistaja_nimi) VALUES ('Pirkka');
 
 -- Lisää esimerkkidataa Ruoka-tauluun
-INSERT INTO Ruoka (ruokaNimi, ruokaPisteet, valmistajaId) VALUES ('Kana-Kalkkunapatee', 0, 1);
+INSERT INTO Ruoka (ruoka_nimi, ruoka_pisteet, valmistaja_id) VALUES ('Kana-Kalkkunapatee', 0, 1);
+INSERT INTO Ruoka (ruoka_nimi, ruoka_pisteet, valmistaja_id) VALUES ('Poultry in Gravy', 0, 2);
+INSERT INTO Ruoka (ruoka_nimi, ruoka_pisteet, valmistaja_id) VALUES ('Kana annosateria', 0, 4);
 
 -- Lisää esimerkkidataa Ruoka_Raakaaine-tauluun
-INSERT INTO Ruoka_Raakaaine (ruokaId, raakaaineId) VALUES (1, 1); -- Kanakalkkunapatee sisältää kanaa
-INSERT INTO Ruoka_Raakaaine (ruokaId, raakaaineId) VALUES (1, 2); -- Kanakalkkunapatee sisältää kalkkunaa
+INSERT INTO Ruoka_Raakaaine (ruoka_id, raakaaine_id) VALUES (1, 1); -- Kanakalkkunapatee sisältää kanaa
+INSERT INTO Ruoka_Raakaaine (ruoka_id, raakaaine_id) VALUES (1, 2); -- Kanakalkkunapatee sisältää kalkkunaa
+INSERT INTO Ruoka_Raakaaine (ruoka_id, raakaaine_id) VALUES (2, 7); -- Poultry in Gravy sisältää siipikarjaa
+INSERT INTO Ruoka_Raakaaine (ruoka_id, raakaaine_id) VALUES (3, 1); -- Pirkka Kana annosateria sisältää kanaa
 
 -- Lisää esimerkkidataa Ruokinta-tauluun
-INSERT INTO Ruokinta (ruokintaAika, taimiMaistui, lempiMaistui, ateriaId, ruokaId) VALUES ('2025-03-09', true, false, 1, 1);
+INSERT INTO Ruokinta (ruokinta_aika, taimi_maistui, lempi_maistui, ateria_id, ruoka_id) VALUES ('2025-03-09', true, false, 1, 1);
 

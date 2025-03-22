@@ -13,49 +13,45 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 
 @Entity
-@Table(name="ruoka")
+@Table(name="Ruoka")
 public class Ruoka {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="valmistajaId")
-    private Valmistaja valmistaja;
-
-    public Valmistaja getValmistaja() {    
-        return valmistaja;
-    }
-    public void setValmistaja(Valmistaja valmistaja) {
-        this.valmistaja = valmistaja;
-    }
-
-    @ManyToMany
-    private Set<Raakaaine> raakaaineet = new HashSet<Raakaaine>();
-    
-    public Set<Raakaaine> getRaakaaineet() {
-        return raakaaineet;
-    }
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "ruoka")
-    private Set<Ruokinta> ruokinnat;
-
-
-    public void setRaakaaineet(Set<Raakaaine> raakaaineet) {
-    this.raakaaineet = raakaaineet;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ruoka_id")
     private Long ruokaId;
-    @Column(name="ruokanimi")
+    
+    @Column(name="ruoka_nimi", nullable = false)
     private String ruokaNimi;
-    @Column(name="ruokapisteet")
+    
+    @Column(name="ruoka_pisteet", nullable = false)
     private double ruokaPisteet;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="valmistaja_id")
+    @JsonIgnore
+    private Valmistaja valmistaja;
+
+    @ManyToMany
+    @JoinTable(
+        name = "Ruoka_Raakaaine",
+        joinColumns = @JoinColumn(name = "ruoka_id"),
+        inverseJoinColumns = @JoinColumn(name = "raakaaine_id")
+    )
+    @JsonIgnore
+    private Set<Raakaaine> raakaaineet = new HashSet<>();
+
+    @OneToMany(mappedBy = "ruoka")
+    @JsonIgnore
+    private Set<Ruokinta> ruokinnat;
+
 
     public Ruoka () {
 
@@ -66,7 +62,7 @@ public class Ruoka {
         this.ruokaNimi = ruokaNimi;
         this.valmistaja = valmistaja;
         this.raakaaineet = raakaaineet;
-        this.ruokaPisteet = 0;
+        this.ruokaPisteet = ruokaPisteet;
     }
 
     public Long getRuokaId() {
@@ -95,6 +91,22 @@ public class Ruoka {
 
     public void addRuokaPisteet(double ruokaPisteet) {
         this.ruokaPisteet += ruokaPisteet;
+    }
+
+    public Valmistaja getValmistaja() {
+        return valmistaja;
+    }
+
+    public void setValmistaja(Valmistaja valmistaja) {
+        this.valmistaja = valmistaja;
+    }
+
+    public Set<Raakaaine> getRaakaaineet() {
+        return raakaaineet;
+    }
+
+    public void setRaakaaineet(Set<Raakaaine> raakaaineet) {
+        this.raakaaineet = raakaaineet;
     }
 
     @Override

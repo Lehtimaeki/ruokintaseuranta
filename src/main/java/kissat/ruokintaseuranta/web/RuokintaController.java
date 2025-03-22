@@ -10,72 +10,68 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.ui.Model;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import java.util.Optional;
+import java.util.List;
 
-
+import kissat.ruokintaseuranta.domain.Ruoka;
 import kissat.ruokintaseuranta.domain.Ruokinta;
-import kissat.ruokintaseuranta.domain.RuokintaRepository;
-
+import kissat.ruokintaseuranta.service.RuokintaService;
+import kissat.ruokintaseuranta.service.RuokaService;
 
 @Controller
 public class RuokintaController {
 
 @Autowired
-private RuokintaRepository ruokintarepo;
+private RuokintaService ruokintaService;
+
+@Autowired
+private RuokaService ruokaService;
 
 @GetMapping("/ruokinnat")
-public String haeKaikkiRuokinnat(Model model) {
-    Iterable<Ruokinta> ruokinnat = ruokintarepo.findAll();
-    List<Ruokinta> ruokintaList = StreamSupport.stream(ruokinnat.spliterator(), false).collect(Collectors.toList());
-    model.addAttribute("ruokinnat", ruokintaList);
-    return "ruokinnat";
- }
+public ResponseEntity<List<Ruokinta>> haeKaikkiRuokinnat() {
+    List<Ruokinta> ruokinnat = ruokintaService.haeKaikkiRuokinnat();
+    return ResponseEntity.ok(ruokinnat);
+}
 
-//Lisää uusi Ruokinta
+// Lisää uusi ruokinta
 @PostMapping("/ruokinnat")
 public ResponseEntity<Ruokinta> uusiRuokinta(@RequestBody Ruokinta uusiRuokinta) {
-    Ruokinta tallennettuRuokinta = ruokintarepo.save(uusiRuokinta);
+    if (uusiRuokinta.getRuoka() == null) {
+        throw new RuntimeException("Ruokaa ei löydy");
+    }
+    Optional<Ruoka> ruoka = ruokaService.haeRuokaId(uusiRuokinta.getRuoka().getRuokaId());
+    if (ruoka.isPresent()) {
+        uusiRuokinta.setRuoka(ruoka.get());
+    } else {
+        throw new RuntimeException("Ruokaa ei löydy");
+    }
+    Ruokinta tallennettuRuokinta = ruokintaService.uusiRuokinta(uusiRuokinta);
     return ResponseEntity.status(HttpStatus.CREATED).body(tallennettuRuokinta);
 }
 
 // Hae yksittäinen ruokinta ID:n perusteella
 @GetMapping("/ruokinnat/{id}")
 public ResponseEntity<Ruokinta> haeRuokintaId(@PathVariable("id") Long ruokintaId) {
-        Optional<Ruokinta> ruokinta = ruokintarepo.findById(ruokintaId);
-        return ruokinta.map(ResponseEntity::ok).orElseGet(() -> 
-        ResponseEntity.notFound().build());
+    Optional<Ruokinta> ruokinta = ruokintaService.haeRuokintaId(ruokintaId);
+    return ruokinta.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 }
 
 // Päivitä ruokinta
 @PutMapping("/ruokinnat/{id}")
 public ResponseEntity<Ruokinta> paivitaRuokinta(@PathVariable("id") Long ruokintaId, @RequestBody Ruokinta ruokintaTiedot) {
-    Optional<Ruokinta> ruokinta = ruokintarepo.findById(ruokintaId);
-    if (ruokinta.isPresent()) {
-        Ruokinta paivitettyRuokinta = ruokinta.get();
-        paivitettyRuokinta.setRuokintaAika(ruokintaTiedot.getRuokintaAika());
-        paivitettyRuokinta.setTaimiMaistui(ruokintaTiedot.isTaimiMaistui());
-        paivitettyRuokinta.setLempiMaistui(ruokintaTiedot.isLempiMaistui());
-        ruokintarepo.save(paivitettyRuokinta);
-        return ResponseEntity.ok(paivitettyRuokinta);
-        } else {
-        return ResponseEntity.notFound().build();
-        }
+    Optional<Ruokinta> ruokinta = ruokintaService.paivitaRuokinta(ruokintaId, ruokintaTiedot);
+    return ruokinta.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 }
 
 // Poista ruokinta
 @DeleteMapping("/ruokinnat/{id}")
 public ResponseEntity<Void> poistaRuokinta(@PathVariable("id") Long ruokintaId) {
-    if (ruokintarepo.existsById(ruokintaId)) {
-        ruokintarepo.deleteById(ruokintaId);
+    if (ruokintaService.poistaRuokinta(ruokintaId)) {
         return ResponseEntity.noContent().build();
-        } else {
+    } else {
         return ResponseEntity.notFound().build();
-        }
+    }
 }
 
 }

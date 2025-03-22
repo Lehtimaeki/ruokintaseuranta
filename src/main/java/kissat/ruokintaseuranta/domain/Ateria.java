@@ -14,16 +14,16 @@ import jakarta.persistence.OneToMany;
 
 
 @Entity
-@Table(name="ateria")
+@Table(name="Ateria")
 public class Ateria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ateriaId")
-    private Long ateriaId;
+    @Column(name = "ateria_id")
+    private Long ateria_id;
 
-    @Column(name="aterianimi", nullable = false)
-    private String ateriaNimi;
+    @Column(name="ateria_nimi", nullable = false)
+    private String ateria_nimi;
 
     @JsonIgnore
     @OneToMany(mappedBy = "ateria")
@@ -33,25 +33,25 @@ public class Ateria {
 
     }
 
-    public Ateria(String ateriaNimi) {
+    public Ateria(String ateria_nimi) {
         super ();
-        this.ateriaNimi = ateriaNimi;
+        this.ateria_nimi = ateria_nimi;
     }
 
-    public Long getAteriaId() {
-        return ateriaId;
+    public Long getAteria_id() {
+        return ateria_id;
     }
 
-    public void setAteriaId(Long ateriaId) {
-        this.ateriaId = ateriaId;
+    public void setAteria_id(Long ateria_id) {
+        this.ateria_id = ateria_id;
     }
 
-    public String getAteriaNimi() {
-        return ateriaNimi;
+    public String getAteria_nimi() {
+        return ateria_nimi;
     }
 
-    public void setAteriaNimi(String ateriaNimi) {
-        this.ateriaNimi = ateriaNimi;
+    public void setAteria_nimi(String ateria_nimi) {
+        this.ateria_nimi = ateria_nimi;
     }
 
     public Set<Ruokinta> getRuokinnat() {
@@ -65,8 +65,8 @@ public class Ateria {
     @Override
     public String toString() {
         return "Ateria{" +
-        "ateriaId=" + ateriaId +
-        ", ateriaNimi='" + ateriaNimi + '\'' +
+        "ateria_id=" + ateria_id +
+        ", ateria_nimi='" + ateria_nimi + '\'' +
         '}';
     } 
 
