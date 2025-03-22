@@ -2,6 +2,7 @@ package kissat.ruokintaseuranta.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import kissat.ruokintaseuranta.domain.RuokaRepository;
 import kissat.ruokintaseuranta.domain.Valmistaja;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@Transactional
 public class RuokaService {
     @Autowired
     private RuokaRepository ruokaRepository;
@@ -28,6 +30,7 @@ public class RuokaService {
 
     }
 
+    @Transactional
     public Ruoka tallennaRuoka(Ruoka ruoka) {
         return ruokaRepository.save(ruoka);
     }
@@ -36,13 +39,18 @@ public class RuokaService {
         return ruokaRepository.findById(ruokaId);
     }
 
+    @Transactional
     public Optional<Ruoka> paivitaRuoka(Long ruokaId, String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet, double ruokaPisteet) {
         return ruokaRepository.findById(ruokaId).map(ruoka -> {
-            ruoka.setRuokaNimi(ruoka.getRuokaNimi());
+            ruoka.setRuokaNimi(ruokaNimi);
+            ruoka.setValmistaja(valmistaja);
+            ruoka.setRaakaaineet(raakaaineet);
+            ruoka.setRuokaPisteet(ruokaPisteet);
             return ruokaRepository.save(ruoka);
         });
     }
-
+   
+    @Transactional
     public boolean poistaRuoka(Long ruokaId) {
         if (ruokaRepository.existsById(ruokaId)) {
             ruokaRepository.deleteById(ruokaId);

@@ -17,16 +17,22 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
 
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Table(name="Ruoka")
+@Transactional
 public class Ruoka {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ruoka_id")
     private Long ruokaId;
+
+    @Version
+    private int version;
     
     @Column(name="ruoka_nimi", nullable = false)
     private String ruokaNimi;
@@ -84,13 +90,13 @@ public class Ruoka {
     public double getRuokaPisteet() {
         return ruokaPisteet;
     }
-
+    
     public void setRuokaPisteet(double ruokaPisteet) {
         this.ruokaPisteet = ruokaPisteet;
     }
 
-    public void addRuokaPisteet(double ruokaPisteet) {
-        this.ruokaPisteet += ruokaPisteet;
+    public void addRuokaPisteet(double lisattavatPisteet) {
+        this.ruokaPisteet += lisattavatPisteet;
     }
 
     public Valmistaja getValmistaja() {

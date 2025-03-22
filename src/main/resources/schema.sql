@@ -31,7 +31,8 @@ CREATE TABLE Ruoka (
     ruoka_nimi VARCHAR(500) NOT NULL,
     ruoka_pisteet DOUBLE PRECISION NOT NULL,
     valmistaja_id BIGINT,
-    FOREIGN KEY (valmistaja_id) REFERENCES Valmistaja(valmistaja_id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (valmistaja_id) REFERENCES Valmistaja(valmistaja_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    version INT DEFAULT 0
 );
 
 -- Ruoka_Raakaaine-taulu (monen-moneen -suhde)

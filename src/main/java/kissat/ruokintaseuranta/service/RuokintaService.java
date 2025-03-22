@@ -2,6 +2,7 @@ package kissat.ruokintaseuranta.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import kissat.ruokintaseuranta.domain.Ruokinta;
 import kissat.ruokintaseuranta.domain.RuokintaRepository;
 
 @Service
+@Transactional
 public class RuokintaService {
 
     @Autowired
@@ -22,6 +24,7 @@ public class RuokintaService {
         return StreamSupport.stream(ruokinnat.spliterator(), false).collect(Collectors.toList());
     }
 
+    @Transactional
     public Ruokinta uusiRuokinta(Ruokinta uusiRuokinta) {
         return ruokintarepo.save(uusiRuokinta);
     }
@@ -30,6 +33,7 @@ public class RuokintaService {
         return ruokintarepo.findById(ruokintaId);
     }
 
+    @Transactional
     public Optional<Ruokinta> paivitaRuokinta(Long ruokintaId, Ruokinta ruokintaTiedot) {
         Optional<Ruokinta> ruokinta = ruokintarepo.findById(ruokintaId);
         if (ruokinta.isPresent()) {
