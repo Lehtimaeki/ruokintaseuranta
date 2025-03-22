@@ -39,6 +39,7 @@ public class RuokintaService {
         if (ruokinta.isPresent()) {
             Ruokinta paivitettyRuokinta = ruokinta.get();
             paivitettyRuokinta.setRuokintaAika(ruokintaTiedot.getRuokintaAika());
+            paivitettyRuokinta.setAteria(ruokintaTiedot.getAteria());
             paivitettyRuokinta.setTaimiMaistui(ruokintaTiedot.isTaimiMaistui());
             paivitettyRuokinta.setLempiMaistui(ruokintaTiedot.isLempiMaistui());
             return Optional.of(ruokintarepo.save(paivitettyRuokinta));

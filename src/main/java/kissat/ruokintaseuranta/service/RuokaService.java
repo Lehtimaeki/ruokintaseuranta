@@ -40,12 +40,11 @@ public class RuokaService {
     }
 
     @Transactional
-    public Optional<Ruoka> paivitaRuoka(Long ruokaId, String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet, double ruokaPisteet) {
+    public Optional<Ruoka> paivitaRuoka(Long ruokaId, String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet) {
         return ruokaRepository.findById(ruokaId).map(ruoka -> {
             ruoka.setRuokaNimi(ruokaNimi);
             ruoka.setValmistaja(valmistaja);
             ruoka.setRaakaaineet(raakaaineet);
-            ruoka.setRuokaPisteet(ruokaPisteet);
             return ruokaRepository.save(ruoka);
         });
     }

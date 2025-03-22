@@ -52,7 +52,6 @@ public class Ruokinta {
         this.ruoka = ruoka != null ? ruoka : new Ruoka();
         this.taimiMaistui = taimiMaistui;
         this.lempiMaistui = lempiMaistui;
-        this.paivitaRuokaPisteet();
     }
 
     public Long getRuokintaId() {
@@ -93,7 +92,6 @@ public class Ruokinta {
 
     public void setTaimiMaistui(boolean taimiMaistui) {
         this.taimiMaistui = taimiMaistui;
-        this.paivitaRuokaPisteet();
     }
 
     public boolean isLempiMaistui() {
@@ -102,21 +100,7 @@ public class Ruokinta {
 
     public void setLempiMaistui(boolean lempiMaistui) {
         this.lempiMaistui = lempiMaistui;
-        this.paivitaRuokaPisteet();
     }
-
-    private void paivitaRuokaPisteet() {
-        if (this.ruoka != null) {
-            double lisattavatPisteet = 0;
-            if (taimiMaistui && lempiMaistui) {
-                lisattavatPisteet = 1;
-            } else if (taimiMaistui || lempiMaistui) {
-                lisattavatPisteet = 0.5;
-            }
-            this.ruoka.addRuokaPisteet(lisattavatPisteet);
-        }
-    }
-    
 
     @Override
     public String toString() {

@@ -17,7 +17,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Version;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,15 +29,9 @@ public class Ruoka {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ruoka_id")
     private Long ruokaId;
-
-    @Version
-    private int version;
     
     @Column(name="ruoka_nimi", nullable = false)
     private String ruokaNimi;
-    
-    @Column(name="ruoka_pisteet", nullable = false)
-    private double ruokaPisteet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="valmistaja_id")
@@ -58,17 +51,15 @@ public class Ruoka {
     @JsonIgnore
     private Set<Ruokinta> ruokinnat;
 
-
     public Ruoka () {
 
     }
 
-    public Ruoka(String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet, double ruokaPisteet) {
+    public Ruoka(String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet) {
         super();
         this.ruokaNimi = ruokaNimi;
         this.valmistaja = valmistaja;
         this.raakaaineet = raakaaineet;
-        this.ruokaPisteet = ruokaPisteet;
     }
 
     public Long getRuokaId() {
@@ -85,18 +76,6 @@ public class Ruoka {
 
     public void setRuokaNimi(String ruokaNimi) {
         this.ruokaNimi = ruokaNimi;
-    }
-
-    public double getRuokaPisteet() {
-        return ruokaPisteet;
-    }
-    
-    public void setRuokaPisteet(double ruokaPisteet) {
-        this.ruokaPisteet = ruokaPisteet;
-    }
-
-    public void addRuokaPisteet(double lisattavatPisteet) {
-        this.ruokaPisteet += lisattavatPisteet;
     }
 
     public Valmistaja getValmistaja() {
@@ -120,7 +99,6 @@ public class Ruoka {
         return "Ruoka{" +
                 "ruokaId=" + ruokaId +
                 ", ruokaNimi='" + ruokaNimi + '\'' +
-                ", ruokaPisteet=" + ruokaPisteet +
                 '}';
     }
 

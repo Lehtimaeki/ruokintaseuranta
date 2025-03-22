@@ -6,17 +6,15 @@ public class RuokaDTO {
 
     private Long ruokaId;
     private String ruokaNimi;
-    private double ruokaPisteet;
     private Long valmistajaId;
     private Set<Long> raakaaineIds;
 
     public RuokaDTO() {
     }
 
-    public RuokaDTO(Long ruokaId, String ruokaNimi, double ruokaPisteet, Long valmistajaId, Set<Long> raakaaineIds) {
+    public RuokaDTO(Long ruokaId, String ruokaNimi, Long valmistajaId, Set<Long> raakaaineIds) {
         this.ruokaId = ruokaId;
         this.ruokaNimi = ruokaNimi;
-        this.ruokaPisteet = ruokaPisteet;
         this.valmistajaId = valmistajaId;
         this.raakaaineIds = raakaaineIds;
     }
@@ -35,14 +33,6 @@ public class RuokaDTO {
 
     public void setRuokaNimi(String ruokaNimi) {
         this.ruokaNimi = ruokaNimi;
-    }
-
-    public double getRuokaPisteet() {
-        return ruokaPisteet;
-    }
-
-    public void setRuokaPisteet(double ruokaPisteet) {
-        this.ruokaPisteet = ruokaPisteet;
     }
 
     public Long getValmistajaId() {
@@ -66,7 +56,6 @@ public class RuokaDTO {
         return "RuokaDTO{" +
                 "ruokaId=" + ruokaId +
                 ", ruokaNimi='" + ruokaNimi + '\'' +
-                ", ruokaPisteet=" + ruokaPisteet +
                 ", valmistajaId=" + valmistajaId +
                 ", raakaaineIds=" + raakaaineIds +
                 '}';

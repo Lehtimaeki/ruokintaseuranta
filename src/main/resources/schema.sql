@@ -6,7 +6,6 @@ DROP TABLE IF EXISTS Valmistaja CASCADE;
 DROP TABLE IF EXISTS Raakaaine CASCADE;
 DROP TABLE IF EXISTS Ateria CASCADE;
 
-
 -- Ateria-taulu
 CREATE TABLE Ateria (
     ateria_id SERIAL PRIMARY KEY,
@@ -29,10 +28,8 @@ CREATE TABLE Valmistaja (
 CREATE TABLE Ruoka (
     ruoka_id SERIAL PRIMARY KEY,
     ruoka_nimi VARCHAR(500) NOT NULL,
-    ruoka_pisteet DOUBLE PRECISION NOT NULL,
     valmistaja_id BIGINT,
-    FOREIGN KEY (valmistaja_id) REFERENCES Valmistaja(valmistaja_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    version INT DEFAULT 0
+    FOREIGN KEY (valmistaja_id) REFERENCES Valmistaja(valmistaja_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Ruoka_Raakaaine-taulu (monen-moneen -suhde)
@@ -77,9 +74,9 @@ INSERT INTO Valmistaja (valmistaja_nimi) VALUES ('Pure Natural');
 INSERT INTO Valmistaja (valmistaja_nimi) VALUES ('Pirkka');
 
 -- Lisää esimerkkidataa Ruoka-tauluun
-INSERT INTO Ruoka (ruoka_nimi, ruoka_pisteet, valmistaja_id) VALUES ('Kana-Kalkkunapatee', 0, 1);
-INSERT INTO Ruoka (ruoka_nimi, ruoka_pisteet, valmistaja_id) VALUES ('Poultry in Gravy', 0, 2);
-INSERT INTO Ruoka (ruoka_nimi, ruoka_pisteet, valmistaja_id) VALUES ('Kana annosateria', 0, 4);
+INSERT INTO Ruoka (ruoka_nimi, valmistaja_id) VALUES ('Kana-Kalkkunapatee', 1);
+INSERT INTO Ruoka (ruoka_nimi, valmistaja_id) VALUES ('Poultry in Gravy', 2);
+INSERT INTO Ruoka (ruoka_nimi, valmistaja_id) VALUES ('Kana annosateria', 4);
 
 -- Lisää esimerkkidataa Ruoka_Raakaaine-tauluun
 INSERT INTO Ruoka_Raakaaine (ruoka_id, raakaaine_id) VALUES (1, 1); -- Kanakalkkunapatee sisältää kanaa
