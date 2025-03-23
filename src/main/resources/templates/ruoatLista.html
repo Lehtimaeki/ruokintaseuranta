@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kissojen ruokakirjasto</title>
+
+    <style>
+        body {
+            background-color: #eed6f8; /* Taustaväri */
+            font-family: Arial, sans-serif; /* Fontti */
+            color: #333; /* Tekstin väri */
+        }
+        h1 {
+            font-size: 24px;
+            color: #151515; /* Otsikon väri */
+        }
+        h2 {
+            font-size: 20px;
+            color: #151515; /* Otsikon väri */
+        }
+        label {
+            font-size: 16px;
+        }
+        input, select, button {
+            font-size: 14px;
+        }
+        .checkbox-dropdown {
+            display: inline-block;
+            position: relative;
+        }
+        .checkbox-dropdown-list {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            z-index: 1;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .checkbox-dropdown:hover .checkbox-dropdown-list {
+            display: block;
+        }
+    </style>
+
+</head>
+<body>
+    <h1>Kissojen ruoat</h1>
+    
+    <!-- Lomake uuden ruoan lisäämiseksi -->
+    <h2>Lisää uusi ruoka</h2>
+    <form th:action="@{/ruoat/lisaa}" th:object="${ruoka}" method="post">
+        <label for="ruokaNimi">Ruoka:</label>
+        <input type="text" id="ruokaNimi" name="ruokaNimi" th:field="*{ruokaNimi}" required>
+        <br>
+        <label for="valmistaja">Valmistaja:</label>
+        <select id="valmistaja" th:field="*{valmistaja.valmistajaId}" required>
+            <option th:each="valmistaja : ${valmistajat}" th:value="${valmistaja.valmistajaId}" th:text="${valmistaja.valmistajaNimi}"></option>
+        </select>
+        <br>
+        <label for="raakaaineet">Raaka-aineet:</label>
+        <div class="checkbox-dropdown">
+            <button type="button">Valitse raaka-aineet</button>
+            <div class="checkbox-dropdown-list">
+                <div th:each="raakaaine : ${raakaaineet}">
+                    <label>
+                        <input type="checkbox" th:field="*{raakaaineet}" th:value="${raakaaine.raakaaineId}">
+                        <span th:text="${raakaaine.raakaaineNimi}"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <br>
+        <button type="submit">Lisää</button>
+    </form>
+    
+    <!-- Ruokien listaus -->
+    <h2>Kaikki ruoat</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ruoka</th>
+                <th>Valmistaja</th>
+                <th>Raaka-aineet</th>
+                <th>Toiminnot</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ruoka : ${ruoat}">
+                <td th:text="${ruoka.ruokaId}"></td>
+                <td th:text="${ruoka.ruokaNimi}"></td>
+                <td th:text="${ruoka.valmistaja.valmistajaNimi}"></td>
+                <td>
+                    <ul>
+                        <li th:each="raakaaine : ${ruoka.raakaaineet}" th:text="${raakaaine.raakaaineNimi}"></li>
+                    </ul>
+                </td>
+                <td>
+                    <a th:href="@{/ruoat/muokkaa/{id}(id=${ruoka.ruokaId})}">Muokkaa</a>
+                    <a th:href="@{/ruoat/poista/{id}(id=${ruoka.ruokaId})}">Poista</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Valmistajat</h2>
+    <!-- Valmistajien listaus -->
+    <h2>Kaikki valmistajat</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Valmistaja</th>
+                <th>Toiminnot</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="valmistaja : ${valmistajat}">
+                <td th:text="${valmistaja.valmistajaId}"></td>
+                <td th:text="${valmistaja.valmistajaNimi}"></td>
+                <td>
+                    <a th:href="@{/valmistajat/muokkaa/{id}(id=${valmistaja.valmistajaId})}">Muokkaa</a>
+                    <a th:href="@{/valmistajat/poista/{id}(id=${valmistaja.valmistajaId})}">Poista</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Lisää uusi valmistaja</h2>
+    <form th:action="@{/valmistajat}" th:object="${valmistaja}" method="post">
+        <label for="valmistajaNimi">Valmistaja:</label>
+        <input type="text" id="valmistajaNimi" name="valmistajaNimi" th:field="*{valmistajaNimi}" required>
+        <br>
+        <button type="submit">Lisää</button>
+    </form>
+</body>
+</html>
+
+
+

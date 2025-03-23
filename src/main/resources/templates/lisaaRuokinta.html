@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lisää ruokinta</title>
+</head>
+<body>
+    <h1>Lisää ruokinta</h1>
+    <form th:action="@{/ruokinnat/lisaa}" th:object="${ruokinta}" method="post">
+        <label for="ruokintaAika">Ajankohta:</label>
+        <input type="date" id="ruokintaAika" th:field="*{ruokintaAika}" required>
+        <br>
+        <label for="ateria">Ateria:</label>
+        <select id="ateria" th:field="*{ateria}" required>
+            <option th:each="ateria : ${ateriat}" th:value="${ateria}" th:text="${ateria.ateriaNimi}"></option>
+        </select>
+        <br>
+        <label for="ruoka">Ruoka:</label>
+        <select id="ruoka" th:field="*{ruoka}" required>
+            <option th:each="ruoka : ${ruoat}" th:value="${ruoka}" th:text="${ruoka.ruokaNimi}"></option>
+        </select>
+        <br>
+        <label for="taimiMaistui">Taimille maistui</label>
+        <input type="checkbox" id="taimiMaistui" th:field="*{taimiMaistui}">
+        <br>
+        <label for="lempiMaistui">Lempille maistui</label>
+        <input type="checkbox" id="lempiMaistui" th:field="*{lempiMaistui}">
+        <br>
+        <button type="submit">Tallenna</button>
+    </form>
+</body>
+</html>

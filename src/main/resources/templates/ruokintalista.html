@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Ruokinta List</title>
+</head>
+<body>
+    <h1>Ruokintaseuranta</h1>
+    <a href="/ruokinta/add">Lisää uusi ruokinta</a>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ajankohta</th>
+                <th>Ateria</th>
+                <th>Ruoka</th>
+                <th>Maistuiko Taimille?</th>
+                <th>Maistuiko Lempille?</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ruokinta : ${ruokinnat}">
+                <td th:text="${ruokinta.ruokintaId}"></td>
+                <td th:text="${ruokinta.ruokintaAika}"></td>
+                <td th:text="${ruokinta.taimiMaistui}"></td>
+                <td th:text="${ruokinta.lempiMaistui}"></td>
+                <td th:text="${ruokinta.ateria.ateriaNimi}"></td>
+                <td th:text="${ruokinta.ruoka.ruokaNimi}"></td>
+                <td>
+                    <a th:href="@{/ruokinta/edit/{id}(id=${ruokinta.ruokintaId})}">Muokkaa</a>
+                    <a th:href="@{/ruokinta/delete/{id}(id=${ruokinta.ruokintaId})}">Poista</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,76 +1,78 @@
 package kissat.ruokintaseuranta.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 import kissat.ruokintaseuranta.domain.Ruoka;
+import kissat.ruokintaseuranta.domain.Valmistaja;
+import kissat.ruokintaseuranta.domain.Raakaaine;
 import kissat.ruokintaseuranta.service.RuokaService;
-
+import kissat.ruokintaseuranta.service.ValmistajaService;
+import kissat.ruokintaseuranta.service.RaakaaineService;
 
 @Controller
+@RequestMapping("/ruoat")
 public class RuokaController {
 
-@Autowired
-private RuokaService ruokaService;
+    @Autowired
+    private RuokaService ruokaService;
 
-//Hae kaikki ruoat
-@GetMapping("/ruoat")
-public ResponseEntity<List<Ruoka>> haeKaikkiRuoat() {
-    List<Ruoka> ruoat = ruokaService.haeKaikkiRuoat();
-    return ResponseEntity.ok(ruoat);
-}
+    @Autowired
+    private ValmistajaService valmistajaService;
 
-//Lisää uusi ruoka
-@PostMapping("/ruoat")
-public ResponseEntity<Ruoka> uusiRuoka(@RequestBody Ruoka uusiRuoka) {
-    Ruoka tallennettuRuoka = ruokaService.tallennaRuoka(uusiRuoka);
-    return ResponseEntity.status(HttpStatus.CREATED).body(tallennettuRuoka);
-}
+    @Autowired
+    private RaakaaineService raakaaineService;
 
-// Hae yksittäinen ruoka ID:n perusteella
-@GetMapping("/ruoat/{id}")
-public ResponseEntity<Ruoka> haeRuokaId(@PathVariable("id") Long ruokaId) {
-    Optional<Ruoka> ruoka = ruokaService.haeRuokaId(ruokaId);
-    return ruoka.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-}
+    @GetMapping
+    public String haeKaikkiRuoat(Model model) {
+        List<Ruoka> ruoat = ruokaService.haeKaikkiRuoat();
+        List<Valmistaja> valmistajat = valmistajaService.haeKaikkiValmistajat();
+        List<Raakaaine> raakaaineet = raakaaineService.haeKaikkiRaakaaineet();
+        model.addAttribute("ruoat", ruoat);
+        model.addAttribute("valmistajat", valmistajat);
+        model.addAttribute("raakaaineet", raakaaineet);
+        model.addAttribute("ruoka", new Ruoka());
+        return "ruoatLista";
+    }
 
-// Päivitä ruoka
-@PutMapping("/ruoat/{id}")
-public ResponseEntity<Ruoka> paivitaRuoka(@PathVariable("id") Long ruokaId, @RequestBody Ruoka ruokaTiedot) {
-    Optional<Ruoka> ruoka = ruokaService.haeRuokaId(ruokaId);
-    if (ruoka.isPresent()) {
-        Ruoka paivitettyRuoka = ruoka.get();
-        paivitettyRuoka.setRuokaNimi(ruokaTiedot.getRuokaNimi());
-        paivitettyRuoka.setValmistaja(ruokaTiedot.getValmistaja());
-        paivitettyRuoka.setRaakaaineet(ruokaTiedot.getRaakaaineet());
-        ruokaService.tallennaRuoka(paivitettyRuoka);
-        return ResponseEntity.ok(paivitettyRuoka);
+
+    @PostMapping("/lisaa")
+    public String lisaaRuoka(@ModelAttribute Ruoka uusiRuoka) {
+        ruokaService.tallennaRuoka(uusiRuoka);
+        return "redirect:/ruoat";
+    }
+
+
+    @GetMapping("/muokkaa/{id}")
+    public String naytaMuokkausLomake(@PathVariable("id") Long ruokaId, Model model) {
+        Optional<Ruoka> ruoka = ruokaService.haeRuokaId(ruokaId);
+        if (ruoka.isPresent()) {
+            model.addAttribute("muokattavaRuoka", ruoka.get());
+            model.addAttribute("valmistajat", valmistajaService.haeKaikkiValmistajat());
+            model.addAttribute("raakaaineet", raakaaineService.haeKaikkiRaakaaineet());
+            return "ruoatMuokkaa";
         } else {
-        return ResponseEntity.notFound().build();
+            return "redirect:/ruoat";
         }
-}
+    }
 
-// Poista ruoka
-@DeleteMapping("/ruoat/{id}")
-public ResponseEntity<Void> poistaRuoka(@PathVariable("id") Long ruokaId) {
-    Optional<Ruoka> ruoka = ruokaService.haeRuokaId(ruokaId);
-    if (ruoka.isPresent()) {
+    
+    @PostMapping("/muokkaa")
+    public String paivitaRuoka(@ModelAttribute Ruoka muokattavaRuoka) {
+        ruokaService.tallennaRuoka(muokattavaRuoka);
+        return "redirect:/ruoat";
+    }
+    
+
+    @GetMapping("/poista/{id}")
+    public String poistaRuoka(@PathVariable("id") Long ruokaId) {
         ruokaService.poistaRuoka(ruokaId);
-        return ResponseEntity.noContent().build();
-        } else {
-        return ResponseEntity.notFound().build();
-        }
+        return "redirect:/ruoat";
+    }
 }
 
-}
