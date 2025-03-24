@@ -5,7 +5,7 @@
 
     <style>
         body {
-            background-color: #eed6f8; /* Taustaväri */
+            background-color: #ffffff; /* Taustaväri */
             font-family: Arial, sans-serif; /* Fontti */
             color: #333; /* Tekstin väri */
         }
@@ -43,7 +43,7 @@
 
 </head>
 <body>
-    <h1>Kissojen ruoat</h1>
+    <h1>Kissojen ruokakirjasto</h1>
     
     <!-- Lomake uuden ruoan lisäämiseksi -->
     <h2>Lisää uusi ruoka</h2>
@@ -101,35 +101,6 @@
             </tr>
         </tbody>
     </table>
-    <h2>Valmistajat</h2>
-    <!-- Valmistajien listaus -->
-    <h2>Kaikki valmistajat</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Valmistaja</th>
-                <th>Toiminnot</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="valmistaja : ${valmistajat}">
-                <td th:text="${valmistaja.valmistajaId}"></td>
-                <td th:text="${valmistaja.valmistajaNimi}"></td>
-                <td>
-                    <a th:href="@{/valmistajat/muokkaa/{id}(id=${valmistaja.valmistajaId})}">Muokkaa</a>
-                    <a th:href="@{/valmistajat/poista/{id}(id=${valmistaja.valmistajaId})}">Poista</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <h2>Lisää uusi valmistaja</h2>
-    <form th:action="@{/valmistajat}" th:object="${valmistaja}" method="post">
-        <label for="valmistajaNimi">Valmistaja:</label>
-        <input type="text" id="valmistajaNimi" name="valmistajaNimi" th:field="*{valmistajaNimi}" required>
-        <br>
-        <button type="submit">Lisää</button>
-    </form>
 </body>
 </html>
 

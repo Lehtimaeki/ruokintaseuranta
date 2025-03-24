@@ -20,10 +20,10 @@ public class Ateria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ateria_id")
-    private Long ateria_id;
+    private Long ateriaId;
 
     @Column(name="ateria_nimi", nullable = false)
-    private String ateria_nimi;
+    private String ateriaNimi;
 
     @JsonIgnore
     @OneToMany(mappedBy = "ateria")
@@ -33,25 +33,25 @@ public class Ateria {
 
     }
 
-    public Ateria(String ateria_nimi) {
+    public Ateria(String ateriaNimi) {
         super ();
-        this.ateria_nimi = ateria_nimi;
+        this.ateriaNimi = ateriaNimi;
     }
 
-    public Long getAteria_id() {
-        return ateria_id;
+    public Long getAteriaId() {
+        return ateriaId;
     }
 
-    public void setAteria_id(Long ateria_id) {
-        this.ateria_id = ateria_id;
+    public void setAteria_id(Long ateriaId) {
+        this.ateriaId = ateriaId;
     }
 
-    public String getAteria_nimi() {
-        return ateria_nimi;
+    public String getAteriaNimi() {
+        return ateriaNimi;
     }
 
-    public void setAteria_nimi(String ateria_nimi) {
-        this.ateria_nimi = ateria_nimi;
+    public void setAteriaNimi(String ateriaNimi) {
+        this.ateriaNimi = ateriaNimi;
     }
 
     public Set<Ruokinta> getRuokinnat() {
@@ -65,8 +65,8 @@ public class Ateria {
     @Override
     public String toString() {
         return "Ateria{" +
-        "ateria_id=" + ateria_id +
-        ", ateria_nimi='" + ateria_nimi + '\'' +
+        "ateriaId=" + ateriaId +
+        ", ateriaNimi='" + ateriaNimi + '\'' +
         '}';
     } 
 

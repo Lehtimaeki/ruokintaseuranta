@@ -33,7 +33,7 @@ public class Ruokinta {
     @Column(name="lempi_maistui", nullable = false)
     private boolean lempiMaistui;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "ateria_id")
     private Ateria ateria;
 

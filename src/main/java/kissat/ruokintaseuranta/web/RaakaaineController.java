@@ -1,63 +1,67 @@
 package kissat.ruokintaseuranta.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
-
 import kissat.ruokintaseuranta.domain.Raakaaine;
-import kissat.ruokintaseuranta.dto.RaakaaineDTO;
 import kissat.ruokintaseuranta.service.RaakaaineService;
 
-
-@RestController
+@Controller
 public class RaakaaineController {
 
 @Autowired
 private RaakaaineService raakaaineService;
 
-//Lisää uusi Raakaaine
-@PostMapping("/raakaaineet")
-public ResponseEntity<Raakaaine> uusiRaakaaine(@RequestBody Raakaaine uusiRaakaaine) {
-    Raakaaine tallennettuRaakaaine = raakaaineService.tallennaRaakaaine(uusiRaakaaine);
-    return ResponseEntity.status(HttpStatus.CREATED).body(tallennettuRaakaaine);
-}
-//Hae kaikki Raakaaineet
-@GetMapping("/raakaaineet")
-public ResponseEntity<List<Raakaaine>> haeKaikkiRaakaaineet() {
-    List<Raakaaine> raakaaineet = raakaaineService.haeKaikkiRaakaaineet();
-    return ResponseEntity.ok(raakaaineet);
+// Näytä lomake uuden raaka-aineen lisäämiseksi
+@GetMapping("/raakaaineet/lisaa")
+public String naytaLisaaRaakaaineLomake(Model model) {
+    model.addAttribute("raakaaine", new Raakaaine());
+    return "raakaaineetLista";
 }
 
-// Hae yksittäinen Raakaaine ID:n perusteella
-@GetMapping("/raakaaineet/{id}")
-public ResponseEntity<Raakaaine> haeRaakaaineId(@PathVariable("id") Long raakaaine_id) {
+// Lisää uusi Raakaaine
+@PostMapping("/raakaaineet/lisaa")
+public String uusiRaakaaine(@ModelAttribute Raakaaine raakaaine) {
+    raakaaineService.tallennaRaakaaine(raakaaine);
+    return "redirect:/raakaaineet";
+}
+
+// Näytä kaikki Raakaaineet
+@GetMapping("/raakaaineet")
+public String haeKaikkiRaakaaineet(Model model) {
+    List<Raakaaine> raakaaineet = raakaaineService.haeKaikkiRaakaaineet();
+    model.addAttribute("raakaaineet", raakaaineet);
+    model.addAttribute("raakaaine", new Raakaaine()); // Add this line
+    return "raakaaineetLista";
+}
+
+// Näytä lomake Raakaaineen muokkaamiseksi
+@GetMapping("/raakaaineet/muokkaa/{id}")
+public String naytaMuokkaaRaakaaineLomake(@PathVariable("id") Long raakaaine_id, Model model) {
     Optional<Raakaaine> raakaaine = raakaaineService.haeRaakaaineId(raakaaine_id);
-    return raakaaine.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-}
-// Päivitä Raakaaine
-@PutMapping("/raakaaineet/{id}")
-public ResponseEntity<Raakaaine> paivitaRaakaaine(@PathVariable("id") Long raakaaine_id, @RequestBody RaakaaineDTO raakaaineDTO) {
-    Optional<Raakaaine> paivitettyRaakaaine = raakaaineService.paivitaRaakaaine(raakaaine_id, raakaaineDTO.getRaakaaineNimi());
-    return paivitettyRaakaaine.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-}
-// Poista raaka-aine
-@DeleteMapping("/raakaaineet/{id}")
-public ResponseEntity<Void> poistaRaakaaine(@PathVariable("id") Long raakaaine_id) {
-    if (raakaaineService.poistaRaakaaine(raakaaine_id)) {
-        return ResponseEntity.noContent().build();
+    if (raakaaine.isPresent()) {
+        model.addAttribute("muokattavaRaakaine", raakaaine.get());
+        return "raakaaineetMuokkaa";
     } else {
-        return ResponseEntity.notFound().build();
+        return "redirect:/raakaaineet";
     }
+}
+
+// Päivitä Raakaaine
+@PostMapping("/raakaaineet/muokkaa/{id}")
+public String paivitaRaakaaine(@PathVariable("id") Long raakaaine_id, @ModelAttribute Raakaaine raakaaine) {
+    raakaaineService.paivitaRaakaaine(raakaaine_id, raakaaine.getRaakaaineNimi());
+    return "redirect:/raakaaineet";
+}
+
+// Poista raaka-aine
+@PostMapping("/raakaaineet/poista/{id}")
+public String poistaRaakaaine(@PathVariable("id") Long raakaaine_id) {
+    raakaaineService.poistaRaakaaine(raakaaine_id);
+    return "redirect:/raakaaineet";
 }
 }
 

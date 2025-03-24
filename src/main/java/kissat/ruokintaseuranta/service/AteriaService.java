@@ -34,7 +34,7 @@ public Optional<Ateria> paivitaAteria(Long ateriaId, Ateria ateriaTiedot) {
     Optional<Ateria> ateria = ateriaRepo.findById(ateriaId);
     if (ateria.isPresent()) {
         Ateria paivitettyAteria = ateria.get();
-        paivitettyAteria.setAteria_nimi(ateriaTiedot.getAteria_nimi());
+        paivitettyAteria.setAteriaNimi(ateriaTiedot.getAteriaNimi());
         return Optional.of(ateriaRepo.save(paivitettyAteria));
     } else {
         return Optional.empty();

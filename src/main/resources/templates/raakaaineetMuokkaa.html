@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Muokkaa raaka-ainetta</title>
+    <style>
+        body {
+            background-color: #ffffff; /* Taustaväri */
+            font-family: Arial, sans-serif; /* Fontti */
+            color: #333; /* Tekstin väri */
+        }
+        h1 {
+            font-size: 24px;
+            color: #151515; /* Otsikon väri */
+        }
+        h2 {
+            font-size: 20px;
+            color: #151515; /* Otsikon väri */
+        }
+        label {
+            font-size: 16px;
+        }
+        input, select, button {
+            font-size: 14px;
+        }
+        .checkbox-dropdown {
+            display: inline-block;
+            position: relative;
+        }
+        .checkbox-dropdown-list {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            z-index: 1;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .checkbox-dropdown:hover .checkbox-dropdown-list {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Muokkaa raaka-ainetta</h1>
+    <form th:action="@{/raakaaineet/muokkaa/{id}(id=${muokattavaRaakaine.raakaaineId})}" th:object="${muokattavaRaakaine}" method="post">
+        <label for="raakaaineNimi">Raaka-aine:</label>
+        <input type="text" id="raakaaineNimi" name="raakaaineNimi" th:field="*{raakaaineNimi}" required>
+        <br>
+        <button type="submit">Päivitä</button>
+    </form>    
+    <a th:href="@{/raakaaineet}">Peruuta</a>
+</body>
+</html>

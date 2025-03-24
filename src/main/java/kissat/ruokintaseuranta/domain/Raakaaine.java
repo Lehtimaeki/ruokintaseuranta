@@ -22,10 +22,10 @@ public class Raakaaine {
     @Id
     @Column(name = "raakaaine_id")
     @GeneratedValue (strategy=GenerationType.IDENTITY)
-    private Long raakaaine_id;
+    private Long raakaaineId;
     
     @Column(name="raakaaine_nimi", nullable = false)
-    private String raakaaine_nimi;
+    private String raakaaineNimi;
     
     @ManyToMany
     @JoinTable(
@@ -40,25 +40,25 @@ public class Raakaaine {
 
     }
 
-    public Raakaaine (String raakaaine_nimi) {
+    public Raakaaine (String raakaaineNimi) {
         super ();
-        this.raakaaine_nimi = raakaaine_nimi;
+        this.raakaaineNimi = raakaaineNimi;
     }
 
     public Long getRaakaaineId() {
-        return raakaaine_id;
+        return raakaaineId;
     }
 
-    public void setRaakaaineId(Long raakaaine_id) {
-        this.raakaaine_id = raakaaine_id; 
+    public void setRaakaaineId(Long raakaaineId) {
+        this.raakaaineId = raakaaineId; 
     }
 
     public String getRaakaaineNimi() {
-        return raakaaine_nimi;
+        return raakaaineNimi;
     }
 
-    public void setRaakaaineNimi(String raakaaine_nimi) {
-        this.raakaaine_nimi = raakaaine_nimi;
+    public void setRaakaaineNimi(String raakaaineNimi) {
+        this.raakaaineNimi = raakaaineNimi;
     }
 
     public Set<Ruoka> getRuoat() {
@@ -72,8 +72,8 @@ public class Raakaaine {
     @Override
     public String toString() {
         return "Raakaaine{" +
-                "raakaaine_id=" + raakaaine_id +
-                ", raakaaine_nimi='" + raakaaine_nimi + '\'' +
+                "raakaaineId=" + raakaaineId +
+                ", raakaaineNimi='" + raakaaineNimi + '\'' +
                 '}';
     }
 

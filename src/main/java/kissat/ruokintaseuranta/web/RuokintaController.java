@@ -32,7 +32,10 @@ public class RuokintaController {
     public String haeKaikkiRuokinnat(Model model) {
         List<Ruokinta> ruokinnat = ruokintaService.haeKaikkiRuokinnat();
         model.addAttribute("ruokinnat", ruokinnat);
-        return "ruokintalista";
+        model.addAttribute("ruokinta", new Ruokinta());
+        model.addAttribute("ateriat", ateriaService.haeKaikkiAteriat());
+        model.addAttribute("ruoat", ruokaService.haeKaikkiRuoat());
+        return "ruokinnatLista";
     }
 
     @GetMapping("/lisaa")
@@ -64,12 +67,6 @@ public class RuokintaController {
         return ruokinta.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Ruokinta> paivitaRuokinta(@PathVariable("id") Long ruokintaId, @RequestBody Ruokinta ruokintaTiedot) {
-        Optional<Ruokinta> ruokinta = ruokintaService.paivitaRuokinta(ruokintaId, ruokintaTiedot);
-        return ruokinta.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> poistaRuokinta(@PathVariable("id") Long ruokintaId) {
         if (ruokintaService.poistaRuokinta(ruokintaId)) {
@@ -77,5 +74,33 @@ public class RuokintaController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/muokkaa/{id}")
+    public String naytaMuokkausLomake(@PathVariable("id") Long ruokintaId, Model model) {
+        Optional<Ruokinta> ruokinta = ruokintaService.haeRuokintaId(ruokintaId);
+        if (ruokinta.isPresent()) {
+            model.addAttribute("ruokinta", ruokinta.get());
+            model.addAttribute("ateriat", ateriaService.haeKaikkiAteriat());
+            model.addAttribute("ruoat", ruokaService.haeKaikkiRuoat());
+            return "ruokkinnatMuokkaa";
+        } else {
+            return "redirect:/ruokinnat";
+        }
+    }
+
+    @PatchMapping("/muokkaa/{id}")
+    public String paivitaRuokinta(@PathVariable("id") Long ruokintaId, @ModelAttribute Ruokinta paivitettyRuokinta) {
+        Optional<Ruokinta> olemassaOlevaRuokinta = ruokintaService.haeRuokintaId(ruokintaId);
+        if (olemassaOlevaRuokinta.isPresent()) {
+            Ruokinta ruokinta = olemassaOlevaRuokinta.get();
+            ruokinta.setRuokintaAika(paivitettyRuokinta.getRuokintaAika());
+            ruokinta.setAteria(paivitettyRuokinta.getAteria());
+            ruokinta.setRuoka(paivitettyRuokinta.getRuoka());
+            ruokinta.setTaimiMaistui(paivitettyRuokinta.isTaimiMaistui());
+            ruokinta.setLempiMaistui(paivitettyRuokinta.isLempiMaistui());
+            ruokintaService.uusiRuokinta(ruokinta);
+        }
+        return "redirect:/ruokinnat";
     }
 }
