@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import kissat.ruokintaseuranta.domain.Ruoka;
 import kissat.ruokintaseuranta.domain.Ruokinta;
+import kissat.ruokintaseuranta.domain.Ateria;
 import kissat.ruokintaseuranta.service.RuokintaService;
 import kissat.ruokintaseuranta.service.RuokaService;
 import kissat.ruokintaseuranta.service.AteriaService;
@@ -95,12 +96,32 @@ public class RuokintaController {
         if (olemassaOlevaRuokinta.isPresent()) {
             Ruokinta ruokinta = olemassaOlevaRuokinta.get();
             ruokinta.setRuokintaAika(paivitettyRuokinta.getRuokintaAika());
-            ruokinta.setAteria(paivitettyRuokinta.getAteria());
-            ruokinta.setRuoka(paivitettyRuokinta.getRuoka());
+
+            if (paivitettyRuokinta.getAteria() == null || paivitettyRuokinta.getAteria().getAteriaId() == null) {
+                throw new IllegalArgumentException("The given Ateria id must not be null");
+            }
+            Optional<Ateria> ateria = ateriaService.haeAteriaId(paivitettyRuokinta.getAteria().getAteriaId());
+            if (ateria.isPresent()) {
+                ruokinta.setAteria(ateria.get());
+            } else {
+                throw new RuntimeException("Ateriaa ei löydy");
+            }
+
+            if (paivitettyRuokinta.getRuoka() == null || paivitettyRuokinta.getRuoka().getRuokaId() == null) {
+                throw new IllegalArgumentException("The given Ruoka id must not be null");
+            }
+            Optional<Ruoka> ruoka = ruokaService.haeRuokaId(paivitettyRuokinta.getRuoka().getRuokaId());
+            if (ruoka.isPresent()) {
+                ruokinta.setRuoka(ruoka.get());
+            } else {
+                throw new RuntimeException("Ruokaa ei löydy");
+            }
+
             ruokinta.setTaimiMaistui(paivitettyRuokinta.isTaimiMaistui());
             ruokinta.setLempiMaistui(paivitettyRuokinta.isLempiMaistui());
-            ruokintaService.uusiRuokinta(ruokinta);
+            ruokintaService.paivitaRuokinta(ruokintaId, ruokinta);
         }
         return "redirect:/ruokinnat";
     }
+    
 }

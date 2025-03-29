@@ -29,8 +29,9 @@
     <form th:action="@{/ruokinnat/muokkaa/{id}(id=${ruokinta.ruokintaId})}" th:object="${ruokinta}" method="post">
         <input type="hidden" name="_method" value="patch"/>
         <label for="ruokintaAika">Päivä:</label>
-        <input type="datetime" id="ruokintaAika" name="ruokintaAika" th:field="*{ruokintaAika}" required>
+        <input type="date" id="ruokintaAika" name="ruokintaAika" th:field="*{ruokintaAika}" required>
         <label for="ateria">Ateria:</label>
+        <input type="hidden" th:field="*{ateria.ateriaId}" />
         <select id="ateria" name="ateria" th:field="*{ateria.ateriaId}" required>
             <option th:each="ateria : ${ateriat}" th:value="${ateria.ateriaId}" th:text="${ateria.ateriaNimi}"></option>
         </select>
