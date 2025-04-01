@@ -26,23 +26,23 @@
 </head>
 <body>
     <h1>Muokkaa ruokintaa</h1>
-    <form th:action="@{/ruokinnat/muokkaa/{id}(id=${ruokinta.ruokintaId})}" th:object="${ruokinta}" method="post">
+    <div th:if="${errorMessage}" style="color: red;">
+        <p th:text="${errorMessage}"></p>
+    </div>
+    <form th:action="@{/muokkaa/{id}(id=${ruokinta.ruokintaId})}" th:object="${ruokinta}" method="post">
         <input type="hidden" name="_method" value="patch"/>
-        <label for="ruokintaAika">Päivä:</label>
-        <input type="date" id="ruokintaAika" name="ruokintaAika" th:field="*{ruokintaAika}" required>
+        <label for="ruokintaAika">Ajankohta:</label>
+        <input type="date" id="ruokintaAika" th:field="*{ruokintaAika}" required>
+        <br>
         <label for="ateria">Ateria:</label>
-        <input type="hidden" th:field="*{ateria.ateriaId}" />
-        <select id="ateria" name="ateria" th:field="*{ateria.ateriaId}" required>
+        <select id="ateria" th:field="*{ateria.ateriaId}" required>
             <option th:each="ateria : ${ateriat}" th:value="${ateria.ateriaId}" th:text="${ateria.ateriaNimi}"></option>
         </select>
+        <br>
         <label for="ruoka">Ruoka:</label>
-        <select id="ruoka" name="ruoka" th:field="*{ruoka.ruokaId}" required>
+        <select id="ruoka" th:field="*{ruoka.ruokaId}" required>
             <option th:each="ruoka : ${ruoat}" th:value="${ruoka.ruokaId}" th:text="${ruoka.ruokaNimi}"></option>
         </select>
-        <label for="taimiMaistui">Taimi maistui:</label>
-        <input type="checkbox" id="taimiMaistui" name="taimiMaistui" th:field="*{taimiMaistui}">
-        <label for="lempiMaistui">Lempi maistui:</label>
-        <input type="checkbox" id="lempiMaistui" name="lempiMaistui" th:field="*{lempiMaistui}">
         <br>
         <button type="submit">Päivitä</button>
     </form>

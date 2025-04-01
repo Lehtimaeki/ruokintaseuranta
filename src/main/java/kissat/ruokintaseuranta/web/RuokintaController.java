@@ -5,9 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.Map;
 
 import kissat.ruokintaseuranta.domain.Ruoka;
 import kissat.ruokintaseuranta.domain.Ruokinta;
@@ -17,7 +22,7 @@ import kissat.ruokintaseuranta.service.RuokaService;
 import kissat.ruokintaseuranta.service.AteriaService;
 
 @Controller
-@RequestMapping("/ruokinnat")
+@RequestMapping("/")
 public class RuokintaController {
 
     @Autowired
@@ -30,16 +35,24 @@ public class RuokintaController {
     private AteriaService ateriaService;
 
     @GetMapping
-    public String haeKaikkiRuokinnat(Model model) {
+    public String haeKaikkiRuokinnat(@AuthenticationPrincipal User user, Model model) {
         List<Ruokinta> ruokinnat = ruokintaService.haeKaikkiRuokinnat();
-        model.addAttribute("ruokinnat", ruokinnat);
-        model.addAttribute("ruokinta", new Ruokinta());
+        Map<LocalDate, List<Ruokinta>> ruokinnatPaivamaaranMukaan = ruokinnat.stream()
+            .collect(Collectors.groupingBy(Ruokinta::getRuokintaAika));
+        
+        model.addAttribute("ruokinnatPaivamaaranMukaan", ruokinnatPaivamaaranMukaan);
+        model.addAttribute("ruokinta", new Ruokinta(LocalDate.now(), new Ateria(), new Ruoka(), false, false)); // Initialize nested objects
         model.addAttribute("ateriat", ateriaService.haeKaikkiAteriat());
         model.addAttribute("ruoat", ruokaService.haeKaikkiRuoat());
-        return "ruokinnatLista";
+        
+        if (user != null) {
+            return "index-kirjautunut";
+        } else {
+            return "index";
+        }
     }
 
-    @GetMapping("/lisaa")
+    @GetMapping("lisaa")
     public String naytaLomake(Model model) {
         model.addAttribute("ruokinta", new Ruokinta());
         model.addAttribute("ateriat", ateriaService.haeKaikkiAteriat());
@@ -47,28 +60,30 @@ public class RuokintaController {
         return "lisaaRuokinta";
     }
 
-    @PostMapping("/lisaa")
+    @PostMapping("lisaa")
     public String lisaaRuokinta(@ModelAttribute Ruokinta uusiRuokinta, Model model) {
-        if (uusiRuokinta.getRuoka() == null) {
-            throw new RuntimeException("Ruokaa ei löydy");
+        try {
+            ruokintaService.uusiRuokinta(uusiRuokinta);
+            return "redirect:/";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("ruokinta", uusiRuokinta);
+            model.addAttribute("ateriat", ateriaService.haeKaikkiAteriat());
+            model.addAttribute("ruoat", ruokaService.haeKaikkiRuoat());
+
+            
+
+            return "lisaaRuokinta";
         }
-        Optional<Ruoka> ruoka = ruokaService.haeRuokaId(uusiRuokinta.getRuoka().getRuokaId());
-        if (ruoka.isPresent()) {
-            uusiRuokinta.setRuoka(ruoka.get());
-        } else {
-            throw new RuntimeException("Ruokaa ei löydy");
-        }
-        ruokintaService.uusiRuokinta(uusiRuokinta);
-        return "redirect:/ruokinnat";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<Ruokinta> haeRuokintaId(@PathVariable("id") Long ruokintaId) {
         Optional<Ruokinta> ruokinta = ruokintaService.haeRuokintaId(ruokintaId);
         return ruokinta.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<Void> poistaRuokinta(@PathVariable("id") Long ruokintaId) {
         if (ruokintaService.poistaRuokinta(ruokintaId)) {
             return ResponseEntity.noContent().build();
@@ -77,51 +92,31 @@ public class RuokintaController {
         }
     }
 
-    @GetMapping("/muokkaa/{id}")
+    @GetMapping("muokkaa/{id}")
     public String naytaMuokkausLomake(@PathVariable("id") Long ruokintaId, Model model) {
         Optional<Ruokinta> ruokinta = ruokintaService.haeRuokintaId(ruokintaId);
         if (ruokinta.isPresent()) {
             model.addAttribute("ruokinta", ruokinta.get());
             model.addAttribute("ateriat", ateriaService.haeKaikkiAteriat());
             model.addAttribute("ruoat", ruokaService.haeKaikkiRuoat());
-            return "ruokkinnatMuokkaa";
+            return "ruokkinnatMuokkaa"; 
         } else {
-            return "redirect:/ruokinnat";
+            return "redirect:/"; // Redirect to the root URL if not found
         }
     }
 
-    @PatchMapping("/muokkaa/{id}")
-    public String paivitaRuokinta(@PathVariable("id") Long ruokintaId, @ModelAttribute Ruokinta paivitettyRuokinta) {
-        Optional<Ruokinta> olemassaOlevaRuokinta = ruokintaService.haeRuokintaId(ruokintaId);
-        if (olemassaOlevaRuokinta.isPresent()) {
-            Ruokinta ruokinta = olemassaOlevaRuokinta.get();
-            ruokinta.setRuokintaAika(paivitettyRuokinta.getRuokintaAika());
-
-            if (paivitettyRuokinta.getAteria() == null || paivitettyRuokinta.getAteria().getAteriaId() == null) {
-                throw new IllegalArgumentException("The given Ateria id must not be null");
-            }
-            Optional<Ateria> ateria = ateriaService.haeAteriaId(paivitettyRuokinta.getAteria().getAteriaId());
-            if (ateria.isPresent()) {
-                ruokinta.setAteria(ateria.get());
-            } else {
-                throw new RuntimeException("Ateriaa ei löydy");
-            }
-
-            if (paivitettyRuokinta.getRuoka() == null || paivitettyRuokinta.getRuoka().getRuokaId() == null) {
-                throw new IllegalArgumentException("The given Ruoka id must not be null");
-            }
-            Optional<Ruoka> ruoka = ruokaService.haeRuokaId(paivitettyRuokinta.getRuoka().getRuokaId());
-            if (ruoka.isPresent()) {
-                ruokinta.setRuoka(ruoka.get());
-            } else {
-                throw new RuntimeException("Ruokaa ei löydy");
-            }
-
-            ruokinta.setTaimiMaistui(paivitettyRuokinta.isTaimiMaistui());
-            ruokinta.setLempiMaistui(paivitettyRuokinta.isLempiMaistui());
-            ruokintaService.paivitaRuokinta(ruokintaId, ruokinta);
+    @PatchMapping("muokkaa/{id}")
+    public String paivitaRuokinta(@PathVariable("id") Long ruokintaId, @ModelAttribute Ruokinta paivitettyRuokinta, Model model) {
+        try {
+            ruokintaService.paivitaRuokinta(ruokintaId, paivitettyRuokinta);
+            return "redirect:/";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("ruokinta", paivitettyRuokinta);
+            model.addAttribute("ateriat", ateriaService.haeKaikkiAteriat());
+            model.addAttribute("ruoat", ruokaService.haeKaikkiRuoat());
+            return "ruokkinnatMuokkaa";
         }
-        return "redirect:/ruokinnat";
     }
     
 }

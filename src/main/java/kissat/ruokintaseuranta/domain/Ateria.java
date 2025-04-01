@@ -42,7 +42,7 @@ public class Ateria {
         return ateriaId;
     }
 
-    public void setAteria_id(Long ateriaId) {
+    public void setAteriaId(Long ateriaId) {
         this.ateriaId = ateriaId;
     }
 

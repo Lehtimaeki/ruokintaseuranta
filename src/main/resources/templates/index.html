@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Taimin ja Lempin ruokailupäiväkirja</title>
+    <style>
+        body {
+            background-color: #ffffff; /* Taustaväri */
+            font-family: Arial, sans-serif; /* Fontti */
+            color: #333; /* Tekstin väri */
+        }
+        h1 {
+            font-size: 24px;
+            color: #151515; /* Otsikon väri */
+        }
+        h2 {
+            font-size: 20px;
+            color: #151515; /* Otsikon väri */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .login-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Taimin ja Lempin ruokailupäiväkirja</h1>
+
+    <!-- Ruokintojen listaus päivämäärän mukaan ryhmiteltynä -->
+    <h2>Kaikki ruokinnat</h2>
+    <div th:each="ruokintaPvm : ${ruokinnatPaivamaaranMukaan}">
+        <h3 th:text="${ruokintaPvm.key}"></h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ateria</th>
+                    <th>Ruoka</th>
+                    <th>Taimi maistui</th>
+                    <th>Lempi maistui</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ruokinta : ${ruokintaPvm.value}">
+                    <td th:text="${ruokinta.ruokintaId}"></td>
+                    <td th:text="${ruokinta.ateria.ateriaNimi}"></td>
+                    <td th:text="${ruokinta.ruoka.ruokaNimi}"></td>
+                    <td th:text="${ruokinta.taimiMaistui ? 'Kyllä' : 'Ei'}"></td>
+                    <td th:text="${ruokinta.lempiMaistui ? 'Kyllä' : 'Ei'}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p>Kirjaudu sisään muokataksesi tietoja.</p>
+    <div class="login-link">
+        <a th:href="@{/kirjaudu}">Kirjaudu sisään</a>
+    </div>
+</body>
+</html>
+
