@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.*;
 
@@ -53,6 +54,7 @@ public class RuokintaController {
     }
 
     @GetMapping("/lisaa")
+    @PreAuthorize("hasRole('ADMIN')")
     public String naytaLomake(Model model) {
         model.addAttribute("ruokinta", new Ruokinta());
         model.addAttribute("ateriat", ateriaService.haeKaikkiAteriat());
@@ -61,6 +63,7 @@ public class RuokintaController {
     }
 
     @PostMapping("/lisaa")
+    @PreAuthorize("hasRole('ADMIN')")
     public String lisaaRuokinta(@ModelAttribute Ruokinta uusiRuokinta, Model model) {
         try {
             ruokintaService.uusiRuokinta(uusiRuokinta);
@@ -74,7 +77,6 @@ public class RuokintaController {
         }
     }
     
-
     @GetMapping("/{id}")
     public ResponseEntity<Ruokinta> haeRuokintaId(@PathVariable("id") Long ruokintaId) {
         Optional<Ruokinta> ruokinta = ruokintaService.haeRuokintaId(ruokintaId);
@@ -82,6 +84,7 @@ public class RuokintaController {
     }
 
     @DeleteMapping("/poista/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public RedirectView poistaRuokinta(@PathVariable("id") Long ruokintaId) {
     if (ruokintaService.poistaRuokinta(ruokintaId)) {
         return new RedirectView("/ruokinnat");
@@ -93,6 +96,7 @@ public class RuokintaController {
 
 //Muokkauslomakkeen haku
 @GetMapping("/muokkaa/{id}")
+@PreAuthorize("hasRole('ADMIN')")
 public String naytaMuokkausLomake(@PathVariable("id") Long ruokintaId, Model model) {
     Optional<Ruokinta> ruokinta = ruokintaService.haeRuokintaId(ruokintaId);
     if (ruokinta.isPresent()) {
@@ -106,6 +110,7 @@ public String naytaMuokkausLomake(@PathVariable("id") Long ruokintaId, Model mod
 }
 
 @PatchMapping("/muokkaa/{id}")
+@PreAuthorize("hasRole('ADMIN')")
 public String paivitaRuokinta(@PathVariable("id") Long ruokintaId, @ModelAttribute Ruokinta paivitettyRuokinta, Model model) {
     try {
         ruokintaService.paivitaRuokinta(ruokintaId, paivitettyRuokinta);

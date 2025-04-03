@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Taimin ja Lempin ruokailupäiväkirja</title>
     <style>
@@ -82,8 +83,12 @@
                     <td th:text="${ruokinta.taimiMaistui ? 'Kyllä' : 'Ei'}"></td>
                     <td th:text="${ruokinta.lempiMaistui ? 'Kyllä' : 'Ei'}"></td>
                     <td>
-                        <a th:href="@{/ruokinnat/muokkaa/{id}(id=${ruokinta.ruokintaId})}" th:if="${ruokinta.ruokintaId != null}">Muokkaa</a>
-                        <form th:action="@{/ruokinnat/poista/{id}(id=${ruokinta.ruokintaId})}" method="post" style="display:inline;" th:if="${ruokinta.ruokintaId != null}">
+                        <a th:href="@{/ruokinnat/muokkaa/{id}(id=${ruokinta.ruokintaId})}"
+                        sec:authorize="hasRole('ADMIN')" 
+                        th:if="${ruokinta.ruokintaId != null}">Muokkaa</a>
+                        <form th:action="@{/ruokinnat/poista/{id}(id=${ruokinta.ruokintaId})}" method="post" style="display:inline;"
+                        sec:authorize="hasRole('ADMIN')" 
+                        th:if="${ruokinta.ruokintaId != null}">
                             <input type="hidden" name="_method" value="delete"/>
                             <button type="submit">Poista</button>
                         </form>
@@ -95,7 +100,7 @@
 
     <!-- Uuden ruokinnan lisäys -->
     <h2>Lisää uusi ruokinta</h2>
-    <form th:action="@{/ruokinnat/lisaa}" th:object="${ruokinta}" method="post">
+    <form th:action="@{/ruokinnat/lisaa}" th:object="${ruokinta}" method="post" sec:authorize="hasRole('ADMIN')">
         <label for="ruokintaAika">Päivämäärä:</label>
         <input type="date" id="ruokintaAika" name="ruokintaAika" th:field="*{ruokintaAika}" required />
         <br/>

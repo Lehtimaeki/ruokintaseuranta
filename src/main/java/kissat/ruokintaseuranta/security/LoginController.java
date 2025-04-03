@@ -8,12 +8,12 @@ public class LoginController {
 
     @GetMapping("/kirjaudu")
     public String login() {
-        return "kirjaudu"; // Varmista, että tämä palauttaa oikean näkymän, esim. login.html
+        return "kirjaudu"; 
     }
 
     @GetMapping("/kirjauduulos")
     public String logout() {
-        return "redirect:/kirjaudu?kirjauduulos"; // Uudelleenohjaa kirjautumissivulle uloskirjautumisen jälkeen
+        return "redirect:/kirjaudu?kirjauduulos"; 
     }
 }
 
