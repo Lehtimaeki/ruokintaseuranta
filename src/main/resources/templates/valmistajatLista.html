@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Valmistajakirjasto</title>
+    <style>
+        body {
+            background-color: #ffffff; /* Taustaväri */
+            font-family: Arial, sans-serif; /* Fontti */
+            color: #333; /* Tekstin väri */
+        }
+        h1 {
+            font-size: 24px;
+            color: #151515; /* Otsikon väri */
+        }
+        h2 {
+            font-size: 20px;
+            color: #151515; /* Otsikon väri */
+        }
+        label {
+            font-size: 16px;
+        }
+        input, select, button {
+            font-size: 14px;
+        }
+        .checkbox-dropdown {
+            display: inline-block;
+            position: relative;
+        }
+        .checkbox-dropdown-list {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            z-index: 1;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .checkbox-dropdown:hover .checkbox-dropdown-list {
+            display: block;
+        }
+    </style>
+</head>
+<body>       
+    <h1>Valmistajakirjasto</h1>
+    <!-- Lomake uuden valmistajan lisäämiseksi -->
+    <h2>Lisää uusi valmistaja</h2>
+    <form th:action="@{/valmistajat/lisaa}" th:object="${valmistaja}" method="post">
+        <label for="valmistajaNimi">Valmistaja:</label>
+        <input type="text" id="valmistajaNimi" name="valmistajaNimi" th:field="*{valmistajaNimi}" required>
+        <br>
+        <button type="submit">Lisää</button>
+    </form>
+    <!-- Valmistajien listaus -->
+    <h2>Kaikki valmistajat</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Valmistaja</th>
+                <th>Toiminnot</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="valmistaja : ${valmistajat}">
+                <td th:text="${valmistaja.valmistajaId}"></td>
+                <td th:text="${valmistaja.valmistajaNimi}"></td>
+                <td>
+                    <a th:href="@{/valmistajat/muokkaa/{id}(id=${valmistaja.valmistajaId})}">Muokkaa</a>
+                    <form th:action="@{/valmistajat/poista/{id}(id=${valmistaja.valmistajaId})}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <button type="submit">Poista</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

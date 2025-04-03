@@ -1,77 +1,67 @@
 package kissat.ruokintaseuranta.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import java.util.Optional;
-
 import kissat.ruokintaseuranta.domain.Raakaaine;
-import kissat.ruokintaseuranta.domain.RaakaaineRepository;
+import kissat.ruokintaseuranta.service.RaakaaineService;
 
-
-@RestController
+@Controller
 public class RaakaaineController {
 
 @Autowired
-private RaakaaineRepository raakaainerepo;
+private RaakaaineService raakaaineService;
 
-//Lisää uusi Raakaaine
-@PostMapping("/raakaaineet")
-public ResponseEntity<Raakaaine> uusiRaakaaine(@RequestBody Raakaaine uusiRaakaaine) {
-    Raakaaine tallennettuRaakaaine = raakaainerepo.save(uusiRaakaaine);
-    return ResponseEntity.status(HttpStatus.CREATED).body(tallennettuRaakaaine);
+// Näytä lomake uuden raaka-aineen lisäämiseksi
+@GetMapping("/raakaaineet/lisaa")
+public String naytaLisaaRaakaaineLomake(Model model) {
+    model.addAttribute("raakaaine", new Raakaaine());
+    return "raakaaineetLista";
 }
 
-//Hae kaikki Raakaaineet
+// Lisää uusi Raakaaine
+@PostMapping("/raakaaineet/lisaa")
+public String uusiRaakaaine(@ModelAttribute Raakaaine raakaaine) {
+    raakaaineService.tallennaRaakaaine(raakaaine);
+    return "redirect:/raakaaineet";
+}
+
+// Näytä kaikki Raakaaineet
 @GetMapping("/raakaaineet")
-public List<Raakaaine> haeKaikkiRaakaaineet() {
-    Iterable<Raakaaine> raakaaineet = raakaainerepo.findAll();
-    return StreamSupport.stream(raakaaineet.spliterator(), 
-    false).collect(Collectors.toList());
+public String haeKaikkiRaakaaineet(Model model) {
+    List<Raakaaine> raakaaineet = raakaaineService.haeKaikkiRaakaaineet();
+    model.addAttribute("raakaaineet", raakaaineet);
+    model.addAttribute("raakaaine", new Raakaaine()); // Add this line
+    return "raakaaineetLista";
 }
 
-// Hae yksittäinen Raakaaine ID:n perusteella
-@GetMapping("/raakaaineet/{id}")
-public ResponseEntity<Raakaaine> haeRaakaaineId(@PathVariable("id") Long raakaaineId) {
-        Optional<Raakaaine> raakaaine = raakaainerepo.findById(raakaaineId);
-        return raakaaine.map(ResponseEntity::ok).orElseGet(() -> 
-        ResponseEntity.notFound().build());
+// Näytä lomake Raakaaineen muokkaamiseksi
+@GetMapping("/raakaaineet/muokkaa/{id}")
+public String naytaMuokkaaRaakaaineLomake(@PathVariable("id") Long raakaaine_id, Model model) {
+    Optional<Raakaaine> raakaaine = raakaaineService.haeRaakaaineId(raakaaine_id);
+    if (raakaaine.isPresent()) {
+        model.addAttribute("muokattavaRaakaine", raakaaine.get());
+        return "raakaaineetMuokkaa";
+    } else {
+        return "redirect:/raakaaineet";
+    }
 }
 
 // Päivitä Raakaaine
-@PutMapping("/raakaaineet/{id}")
-public ResponseEntity<Raakaaine> paivitaRaakaaine(@PathVariable("id") Long raakaaineId, @RequestBody Raakaaine raakaaineTiedot) {
-    Optional<Raakaaine> raakaaine = raakaainerepo.findById(raakaaineId);
-    if (raakaaine.isPresent()) {
-        Raakaaine paivitettyRaakaaine = raakaaine.get();
-        paivitettyRaakaaine.setRaakaaineNimi(raakaaineTiedot.getRaakaaineNimi());
-        return ResponseEntity.ok(paivitettyRaakaaine);
-        } else {
-        return ResponseEntity.notFound().build();
-        }
+@PostMapping("/raakaaineet/muokkaa/{id}")
+public String paivitaRaakaaine(@PathVariable("id") Long raakaaine_id, @ModelAttribute Raakaaine raakaaine) {
+    raakaaineService.paivitaRaakaaine(raakaaine_id, raakaaine.getRaakaaineNimi());
+    return "redirect:/raakaaineet";
 }
 
-// Poista valmistaja
-@DeleteMapping("/raakaaineet/{id}")
-public ResponseEntity<Void> poistaRaakaaine(@PathVariable("id") Long raakaaineId) {
-    if (raakaainerepo.existsById(raakaaineId)) {
-        raakaainerepo.deleteById(raakaaineId);
-        return ResponseEntity.noContent().build();
-        } else {
-        return ResponseEntity.notFound().build();
-        }
+// Poista raaka-aine
+@PostMapping("/raakaaineet/poista/{id}")
+public String poistaRaakaaine(@PathVariable("id") Long raakaaine_id) {
+    raakaaineService.poistaRaakaaine(raakaaine_id);
+    return "redirect:/raakaaineet";
+}
 }
 
-
-}

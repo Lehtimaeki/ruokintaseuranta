@@ -13,60 +13,53 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
-@Table(name="ruoka")
+@Table(name="Ruoka")
+@Transactional
 public class Ruoka {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="valmistajaId")
-    private Valmistaja valmistaja;
-
-    public Valmistaja getValmistaja() {    
-        return valmistaja;
-    }
-    public void setValmistaja(Valmistaja valmistaja) {
-        this.valmistaja = valmistaja;
-    }
-
-    @ManyToMany
-    private Set<Raakaaine> raakaaineet = new HashSet<Raakaaine>();
-    
-    public Set<Raakaaine> getRaakaaineet() {
-        return raakaaineet;
-    }
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "ruoka")
-    private Set<Ruokinta> ruokinnat;
-
-
-    public void setRaakaaineet(Set<Raakaaine> raakaaineet) {
-    this.raakaaineet = raakaaineet;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ruoka_id")
     private Long ruokaId;
-    @Column(name="ruokanimi")
+    
+    @Column(name="ruoka_nimi", nullable = false)
     private String ruokaNimi;
-    @Column(name="ruokapisteet")
-    private double ruokaPisteet;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="valmistaja_id")
+    @JsonIgnore
+    private Valmistaja valmistaja;
+
+    @ManyToMany
+    @JoinTable(
+        name = "Ruoka_Raakaaine",
+        joinColumns = @JoinColumn(name = "ruoka_id"),
+        inverseJoinColumns = @JoinColumn(name = "raakaaine_id")
+    )
+    @JsonIgnore
+    private Set<Raakaaine> raakaaineet = new HashSet<>();
+
+    @OneToMany(mappedBy = "ruoka")
+    @JsonIgnore
+    private Set<Ruokinta> ruokinnat;
 
     public Ruoka () {
 
     }
 
-    public Ruoka(String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet, double ruokaPisteet) {
+    public Ruoka(String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet) {
         super();
         this.ruokaNimi = ruokaNimi;
         this.valmistaja = valmistaja;
         this.raakaaineet = raakaaineet;
-        this.ruokaPisteet = 0;
     }
 
     public Long getRuokaId() {
@@ -85,16 +78,20 @@ public class Ruoka {
         this.ruokaNimi = ruokaNimi;
     }
 
-    public double getRuokaPisteet() {
-        return ruokaPisteet;
+    public Valmistaja getValmistaja() {
+        return valmistaja;
     }
 
-    public void setRuokaPisteet(double ruokaPisteet) {
-        this.ruokaPisteet = ruokaPisteet;
+    public void setValmistaja(Valmistaja valmistaja) {
+        this.valmistaja = valmistaja;
     }
 
-    public void addRuokaPisteet(double ruokaPisteet) {
-        this.ruokaPisteet += ruokaPisteet;
+    public Set<Raakaaine> getRaakaaineet() {
+        return raakaaineet;
+    }
+
+    public void setRaakaaineet(Set<Raakaaine> raakaaineet) {
+        this.raakaaineet = raakaaineet;
     }
 
     @Override
@@ -102,7 +99,6 @@ public class Ruoka {
         return "Ruoka{" +
                 "ruokaId=" + ruokaId +
                 ", ruokaNimi='" + ruokaNimi + '\'' +
-                ", ruokaPisteet=" + ruokaPisteet +
                 '}';
     }
 

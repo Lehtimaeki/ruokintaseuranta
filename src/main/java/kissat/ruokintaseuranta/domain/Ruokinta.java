@@ -11,28 +11,34 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-
+import jakarta.persistence.CascadeType;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
-@Table(name="ruokinta")
+@Table(name="Ruokinta")
+@Transactional
 public class Ruokinta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ruokinta_id")
     private Long ruokintaId;
-    @Column(name="ruokintaaika")
+    
+    @Column(name="ruokinta_aika", nullable = false)
     private LocalDate ruokintaAika;
-    @Column(name="taimimaistui")
+    
+    @Column(name="taimi_maistui", nullable = false)
     private boolean taimiMaistui;
-    @Column(name="lempimaistui")
+    
+    @Column(name="lempi_maistui", nullable = false)
     private boolean lempiMaistui;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ateria")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "ateria_id")
     private Ateria ateria;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ruoka")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "ruoka_id")
     private Ruoka ruoka;
 
     public Ruokinta () {
@@ -43,10 +49,9 @@ public class Ruokinta {
         super();
         this.ruokintaAika = ruokintaAika;
         this.ateria = ateria;
-        this.ruoka = ruoka;
+        this.ruoka = ruoka != null ? ruoka : new Ruoka();
         this.taimiMaistui = taimiMaistui;
         this.lempiMaistui = lempiMaistui;
-        this.paivitaRuokaPisteet();
     }
 
     public Long getRuokintaId() {
@@ -87,7 +92,6 @@ public class Ruokinta {
 
     public void setTaimiMaistui(boolean taimiMaistui) {
         this.taimiMaistui = taimiMaistui;
-        this.paivitaRuokaPisteet();
     }
 
     public boolean isLempiMaistui() {
@@ -96,17 +100,6 @@ public class Ruokinta {
 
     public void setLempiMaistui(boolean lempiMaistui) {
         this.lempiMaistui = lempiMaistui;
-        this.paivitaRuokaPisteet();
-    }
-
-    private void paivitaRuokaPisteet() {
-        double ruokaPisteet = 0;
-        if (taimiMaistui && lempiMaistui) {
-            ruokaPisteet = 1;
-        } else if (taimiMaistui || lempiMaistui) {
-            ruokaPisteet = 0.5;
-        }
-        this.ruoka.addRuokaPisteet(ruokaPisteet);
     }
 
     @Override

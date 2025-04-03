@@ -1,61 +1,117 @@
 package kissat.ruokintaseuranta.service;
 
-import org.springframework.stereotype.Service;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.Map;
 
-import kissat.ruokintaseuranta.domain.RuokaRepository;
-import kissat.ruokintaseuranta.domain.RuokintaRepository;
-import kissat.ruokintaseuranta.dto.RuokintaDTO;
+import kissat.ruokintaseuranta.domain.Ateria;
 import kissat.ruokintaseuranta.domain.Ruoka;
 import kissat.ruokintaseuranta.domain.Ruokinta;
+import kissat.ruokintaseuranta.domain.RuokintaRepository;
 
 @Service
 public class RuokintaService {
-    @Autowired
-    private RuokintaRepository ruokintaRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
-    private RuokaRepository ruokaRepository;
+    private RuokintaRepository ruokintarepo;
 
-    public void tallennaRuokinta(RuokintaDTO ruokintaDTO) {
-        Ruokinta ruokinta = new Ruokinta();
-        ruokinta.setRuokintaAika(ruokintaDTO.getRuokintaAika());
-        ruokinta.setTaimiMaistui(ruokintaDTO.isTaimiMaistui());
-        ruokinta.setLempiMaistui(ruokintaDTO.isLempiMaistui());
 
-        Ruoka ruoka = ruokaRepository.findById(ruokintaDTO.getRuokaId()).orElseThrow(() -> new RuntimeException("Ruoka not found"));
-        ruokinta.setRuoka(ruoka);
 
-        // Päivitä ruoan pisteet
-        if (ruokintaDTO.isTaimiMaistui() && ruokintaDTO.isLempiMaistui()) {
-            ruoka.addRuokaPisteet(1);
-        } else if (ruokintaDTO.isTaimiMaistui() || ruokintaDTO.isLempiMaistui()) {
-            ruoka.addRuokaPisteet(0.5);
+    //Hae kaikki ruokinnat
+
+    public Map<LocalDate, List<Ruokinta>> haeKaikkiRuokinnatRyhmiteltyna() {
+        List<Ruokinta> ruokinnat = ruokintarepo.ruokinnatUusinEnsin();
+        return ruokinnat.stream().collect(Collectors.groupingBy(
+            ruokinta -> ruokinta.getRuokintaAika(),
+            LinkedHashMap::new,
+            Collectors.toList()
+        ));
+    }
+
+
+    //Luo uusi ruokinta
+    @Transactional
+    public Ruokinta uusiRuokinta(Ruokinta uusiRuokinta) {
+        Ateria ateria = uusiRuokinta.getAteria();
+        if (ateria != null && ateria.getAteriaId() != null) {
+            Ateria loydettyAteria = entityManager.find(Ateria.class, ateria.getAteriaId());
+            uusiRuokinta.setAteria(loydettyAteria);
+        } else {
+            throw new IllegalArgumentException("AteriaId must not be null");
         }
+        Ruoka ruoka = uusiRuokinta.getRuoka();
+        if (ruoka != null && ruoka.getRuokaId() != null) {
+            Ruoka loydettyRuoka = entityManager.find(Ruoka.class, ruoka.getRuokaId());
+            uusiRuokinta.setRuoka(loydettyRuoka);
+        } else {
+            throw new IllegalArgumentException("RuokaId must not be null");
+        }
+        uusiRuokinta.setRuokintaAika(uusiRuokinta.getRuokintaAika());
 
-        ruokaRepository.save(ruoka);
-        ruokintaRepository.save(ruokinta);
+        return ruokintarepo.save(uusiRuokinta);
+
     }
 
-    public List<RuokintaDTO> haeKaikkiRuokinnat() {
-        List<Ruokinta> ruokinnat = StreamSupport
-                .stream(ruokintaRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
-        return ruokinnat.stream().map(this::convertToDTO).collect(Collectors.toList());
+    public Optional<Ruokinta> haeRuokintaId(Long ruokintaId) {
+        return ruokintarepo.findById(ruokintaId);
     }
 
-    private RuokintaDTO convertToDTO(Ruokinta ruokinta) {
-        RuokintaDTO dto = new RuokintaDTO();
-        dto.setRuokintaId(ruokinta.getRuokintaId());
-        dto.setRuokintaAika(ruokinta.getRuokintaAika());
-        dto.setTaimiMaistui(ruokinta.isTaimiMaistui());
-        dto.setLempiMaistui(ruokinta.isLempiMaistui());
-        dto.setAteriaId(ruokinta.getAteria().getAteriaId());
-        dto.setRuokaId(ruokinta.getRuoka().getRuokaId());
-        return dto;
+    @Transactional
+    public Optional<Ruokinta> paivitaRuokinta(Long ruokintaId, Ruokinta ruokintaTiedot) {
+        Optional<Ruokinta> ruokinta = ruokintarepo.findById(ruokintaId);
+        if (ruokinta.isPresent()) {
+            Ruokinta paivitettyRuokinta = ruokinta.get();
+            paivitettyRuokinta.setRuokintaAika(ruokintaTiedot.getRuokintaAika());
+            paivitettyRuokinta.setTaimiMaistui(ruokintaTiedot.isTaimiMaistui());
+            paivitettyRuokinta.setLempiMaistui(ruokintaTiedot.isLempiMaistui());
+    
+            if (ruokintaTiedot.getAteria() != null && ruokintaTiedot.getAteria().getAteriaId() != null) {
+                Ateria loydettyAteria = entityManager.find(Ateria.class, ruokintaTiedot.getAteria().getAteriaId());
+                paivitettyRuokinta.setAteria(ruokintaTiedot.getAteria());
+                if (loydettyAteria.getAteriaNimi() == null) {
+                    throw new IllegalArgumentException("AteriaNimi must not be null");
+                }
+                paivitettyRuokinta.setAteria(loydettyAteria);
+            } else {
+                throw new IllegalArgumentException("AteriaId must not be null");
+            }
+    
+            if (ruokintaTiedot.getRuoka() != null && ruokintaTiedot.getRuoka().getRuokaId() != null) {
+                Ruoka loydettyRuoka = entityManager.find(Ruoka.class, ruokintaTiedot.getRuoka().getRuokaId());
+                if (loydettyRuoka.getRuokaNimi() == null) {
+                    throw new IllegalArgumentException("RuokaNimi must not be null");
+                }
+                paivitettyRuokinta.setRuoka(loydettyRuoka);
+            } else {
+                throw new IllegalArgumentException("RuokaId must not be null");
+            }
+    
+            return Optional.of(ruokintarepo.save(paivitettyRuokinta));
+        } else {
+            return Optional.empty();
+        }
+    }
+    
+
+    public boolean poistaRuokinta(Long ruokintaId) {
+        if (ruokintarepo.existsById(ruokintaId)) {
+            ruokintarepo.deleteById(ruokintaId);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -14,15 +14,15 @@ import jakarta.persistence.OneToMany;
 
 
 @Entity
-@Table(name="ateria")
+@Table(name="Ateria")
 public class Ateria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ateriaId")
+    @Column(name = "ateria_id")
     private Long ateriaId;
 
-    @Column(name="aterianimi", nullable = false)
+    @Column(name="ateria_nimi", nullable = false)
     private String ateriaNimi;
 
     @JsonIgnore

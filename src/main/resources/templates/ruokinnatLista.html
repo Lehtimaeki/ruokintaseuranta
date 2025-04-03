@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Taimin ja Lempin ruokailupäiväkirja</title>
+    <style>
+        body {
+            background-color: #ffffff; /* Taustaväri */
+            font-family: Arial, sans-serif; /* Fontti */
+            color: #333; /* Tekstin väri */
+        }
+        h1 {
+            font-size: 24px;
+            color: #151515; /* Otsikon väri */
+        }
+        h2 {
+            font-size: 20px;
+            color: #151515; /* Otsikon väri */
+        }
+        label {
+            font-size: 16px;
+        }
+        input, select, button {
+            font-size: 14px;
+        }
+        .checkbox-dropdown {
+            display: inline-block;
+            position: relative;
+        }
+        .checkbox-dropdown-list {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            z-index: 1;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .checkbox-dropdown:hover .checkbox-dropdown-list {
+            display: block;
+        }
+    </style>
+</head>
+<body>     
+    <h1>Taimin ja Lempin ruokailupäiväkirja</h1>
+
+    <!-- Lomake uuden ruokinnan lisäämiseksi -->
+    <h2>Lisää uusi ruokailu</h2>
+    <form th:action="@{/ruokinnat/lisaa}" th:object="${ruokinta}" method="post">
+        <label for="ruokintaAika">Päivä:</label>
+        <input type="date" id="ruokintaAika" name="ruokintaAika" th:field="*{ruokintaAika}" required>
+        <label for="ateria">Ateria:</label>
+        <select id="ateria" name="ateria" th:field="*{ateria}" required>
+            <option th:each="ateria : ${ateriat}" th:value="${ateria.ateriaId}" th:text="${ateria.ateriaNimi}"></option>
+        </select>
+        <label for="ruoka">Ruoka:</label>
+        <select id="ruoka" name="ruoka" th:field="*{ruoka}" required>
+            <option th:each="ruoka : ${ruoat}" th:value="${ruoka.ruokaId}" th:text="${ruoka.ruokaNimi}"></option>
+        </select>
+        <label for="taimiMaistui">Taimi maistui:</label>
+        <input type="checkbox" id="taimiMaistui" name="taimiMaistui" th:field="*{taimiMaistui}">
+        <label for="lempiMaistui">Lempi maistui:</label>
+        <input type="checkbox" id="lempiMaistui" name="lempiMaistui" th:field="*{lempiMaistui}">
+        <br>
+        <button type="submit">Lisää</button>
+    </form>
+
+    <!-- Ruokintojen listaus -->
+    <h2>Kaikki ruokinnat</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Päivä</th>
+                <th>Ateria</th>
+                <th>Ruoka</th>
+                <th>Taimi maistui</th>
+                <th>Lempi maistui</th>
+                <th>Toiminnot</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ruokinta : ${ruokinnat}">
+                <td th:text="${ruokinta.ruokintaId}"></td>
+                <td>
+                    <span th:if="${ruokinta.ruokintaAika != null}" th:text="${#temporals.format(ruokinta.ruokintaAika, 'yyyy-MM-dd')}"></span>
+                    <span th:if="${ruokinta.ruokintaAika == null}">Ei määritelty</span>
+                </td>
+                <td th:text="${ruokinta.ruoka.ruokaNimi}"></td>
+                <td th:text="${ruokinta.taimiMaistui ? 'Kyllä' : 'Ei'}"></td>
+                <td th:text="${ruokinta.lempiMaistui ? 'Kyllä' : 'Ei'}"></td>
+                <td>
+                    <a th:href="@{/ruokinnat/muokkaa/{id}(id=${ruokinta.ruokintaId})}">Muokkaa</a>
+                    <form th:action="@{/ruokinnat/poista/{id}(id=${ruokinta.ruokintaId})}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <button type="submit">Poista</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
+
+

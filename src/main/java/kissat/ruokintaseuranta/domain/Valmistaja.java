@@ -15,14 +15,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Entity
-@Table(name="valmistaja")
+@Table(name="Valmistaja")
 @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Valmistaja {
 
     @Id
     @GeneratedValue (strategy=GenerationType.IDENTITY)
+    @Column(name = "valmistaja_id")
     private Long valmistajaId;
-    @Column(name="valmistajanimi")
+    
+    @Column(name="valmistaja_nimi", nullable = false)
     private String valmistajaNimi;
 
     @JsonIgnore

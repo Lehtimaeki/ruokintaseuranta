@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>Taimin ja Lempin ruokailupäiväkirja</title>
+    <style>
+        body {
+            background-color: #ffffff; /* Taustaväri */
+            font-family: Arial, sans-serif; /* Fontti */
+            color: #333; /* Tekstin väri */
+        }
+        h1 {
+            font-size: 24px;
+            color: #151515; /* Otsikon väri */
+        }
+        h2 {
+            font-size: 20px;
+            color: #151515; /* Otsikon väri */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .login-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .actions a {
+            color: #4CAF50;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .actions a:hover {
+            text-decoration: underline;
+        }
+        .images-right {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="images-right">
+        <img src="/kuvat/LempinKuva.jpeg" alt="Lempi" style="width:150px;height:auto;">
+        <img src="/kuvat/TaimiKuva.jpg" alt="Taimi" style="width:150px;height:auto;">
+    </div>
+    <h1>Taimin ja Lempin ruokailupäiväkirja</h1>
+
+    <!-- Ruokintojen listaus päivämäärän mukaan ryhmiteltynä -->
+    <h2>Kaikki ruokinnat</h2>
+    <div th:each="ruokintaPvm : ${ruokinnatPaivamaaranMukaan}">
+        <h3 th:text="${ruokintaPvm.key}"></h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ateria</th>
+                    <th>Ruoka</th>
+                    <th>Maistuiko Taimille</th>
+                    <th>Maistuiko Lempille</th>
+                    <th>Toiminnot</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ruokinta : ${ruokintaPvm.value}">
+                    <td th:text="${ruokinta.ruokintaId}"></td>
+                    <td th:text="${ruokinta.ateria.ateriaNimi}"></td>
+                    <td th:text="${ruokinta.ruoka.ruokaNimi}"></td>
+                    <td th:text="${ruokinta.taimiMaistui ? 'Kyllä' : 'Ei'}"></td>
+                    <td th:text="${ruokinta.lempiMaistui ? 'Kyllä' : 'Ei'}"></td>
+                    <td>
+                        <a th:href="@{/ruokinnat/muokkaa/{id}(id=${ruokinta.ruokintaId})}"
+                        sec:authorize="hasRole('ADMIN')" 
+                        th:if="${ruokinta.ruokintaId != null}">Muokkaa</a>
+                        <form th:action="@{/ruokinnat/poista/{id}(id=${ruokinta.ruokintaId})}" method="post" style="display:inline;"
+                        sec:authorize="hasRole('ADMIN')" 
+                        th:if="${ruokinta.ruokintaId != null}">
+                            <input type="hidden" name="_method" value="delete"/>
+                            <button type="submit">Poista</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Uuden ruokinnan lisäys -->
+    <h2>Lisää uusi ruokinta</h2>
+    <form th:action="@{/ruokinnat/lisaa}" th:object="${ruokinta}" method="post" sec:authorize="hasRole('ADMIN')">
+        <label for="ruokintaAika">Päivämäärä:</label>
+        <input type="date" id="ruokintaAika" name="ruokintaAika" th:field="*{ruokintaAika}" required />
+        <br/>
+        <label for="ateria">Ateria:</label>
+        <select id="ateria" name="ateria" th:field="*{ateria.ateriaId}">
+            <option value="" disabled selected>Valitse ateria</option>
+            <option th:each="ateria : ${ateriat}" th:value="${ateria.ateriaId}" th:text="${ateria.ateriaNimi}"></option>
+        </select>
+        <br/>
+        <label for="ruoka">Ruoka:</label>
+        <select id="ruoka" name="ruoka" th:field="*{ruoka.ruokaId}">
+            <option value="" disabled selected>Valitse ruoka</option>
+            <option th:each="ruoka : ${ruoat}" th:value="${ruoka.ruokaId}" th:text="${ruoka.ruokaNimi}"></option>
+        </select>
+        <br/>
+        <label for="taimiMaistui">Taimille maistui:</label>
+        <input type="checkbox" id="taimiMaistui" name="taimiMaistui" th:field="*{taimiMaistui}"/>
+        <br/>
+        <label for="lempiMaistui">Lempille maistui:</label>
+        <input type="checkbox" id="lempiMaistui" name="lempiMaistui" th:field="*{lempiMaistui}"/>
+        <br/>
+        <button type="submit">Lisää</button>
+    </form>
+
+    <div class="login-link">
+        <a th:href="@{/kirjaudu}">Kirjaudu ulos</a>
+    </div>
+</body>
+</html>

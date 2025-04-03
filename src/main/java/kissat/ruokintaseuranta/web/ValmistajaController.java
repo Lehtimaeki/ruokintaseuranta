@@ -1,77 +1,81 @@
 package kissat.ruokintaseuranta.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import java.util.Optional;
+import java.util.List;
 
 import kissat.ruokintaseuranta.domain.Valmistaja;
-import kissat.ruokintaseuranta.domain.ValmistajaRepository;
+import kissat.ruokintaseuranta.service.ValmistajaService;
 
-
-@RestController
+@Controller
+@RequestMapping("/valmistajat")
 public class ValmistajaController {
 
 @Autowired
-private ValmistajaRepository valmistajarepo;
+private ValmistajaService valmistajaService;
 
-//Lisää uusi valmistaja
-@PostMapping("/valmistajat")
-public ResponseEntity<Valmistaja> uusiValmistaja(@RequestBody Valmistaja uusiValmistaja) {
-    Valmistaja tallennettuValmistaja = valmistajarepo.save(uusiValmistaja);
-    return ResponseEntity.status(HttpStatus.CREATED).body(tallennettuValmistaja);
+@GetMapping
+public String haeKaikkiValmistajat(Model model) {
+    List<Valmistaja> valmistajat = valmistajaService.haeKaikkiValmistajat();
+    model.addAttribute("valmistajat", valmistajat);
+    model.addAttribute("valmistaja", new Valmistaja());
+    return "valmistajatLista";
 }
 
-//Hae kaikki valmistajat
-@GetMapping("/valmistajat")
-public List<Valmistaja> haeKaikkiValmistajat() {
-    Iterable<Valmistaja> valmistajat = valmistajarepo.findAll();
-    return StreamSupport.stream(valmistajat.spliterator(), 
-    false).collect(Collectors.toList());
+// Lisää uusi valmistaja
+@PostMapping("/lisaa")
+public String lisaaValmistaja(@ModelAttribute Valmistaja uusiValmistaja) {
+    valmistajaService.uusiValmistaja(uusiValmistaja);
+    return "redirect:/valmistajat";
 }
 
 // Hae yksittäinen valmistaja ID:n perusteella
 @GetMapping("/valmistajat/{id}")
 public ResponseEntity<Valmistaja> haeValmistajaId(@PathVariable("id") Long valmistajaId) {
-        Optional<Valmistaja> valmistaja = valmistajarepo.findById(valmistajaId);
-        return valmistaja.map(ResponseEntity::ok).orElseGet(() -> 
-        ResponseEntity.notFound().build());
+    Optional<Valmistaja> valmistaja = valmistajaService.haeValmistajaId(valmistajaId);
+    return valmistaja.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 }
 
-// Päivitä valmistaja
-@PutMapping("/valmistajat/{id}")
-public ResponseEntity<Valmistaja> paivitaValmistaja(@PathVariable("id") Long valmistajaId, @RequestBody Valmistaja valmistajaTiedot) {
-    Optional<Valmistaja> valmistaja = valmistajarepo.findById(valmistajaId);
+// Näytä muokkauslomake
+@GetMapping("/muokkaa/{id}")
+public String naytaMuokkausLomake(@PathVariable("id") Long valmistajaId, Model model) {
+    Optional<Valmistaja> valmistaja = valmistajaService.haeValmistajaId(valmistajaId);
     if (valmistaja.isPresent()) {
-        Valmistaja paivitettyValmistaja = valmistaja.get();
-        paivitettyValmistaja.setValmistajaNimi(valmistajaTiedot.getValmistajaNimi());
-        valmistajarepo.save(paivitettyValmistaja);
-        return ResponseEntity.ok(paivitettyValmistaja);
-        } else {
-        return ResponseEntity.notFound().build();
-        }
+        model.addAttribute("muokattavaValmistaja", valmistaja.get());
+        return "valmistajatMuokkaa";
+    } else {
+        return "redirect:/valmistajat";
+    }
 }
+//muokkaa valmistajaa
+@PatchMapping("/muokkaa/{id}")
+public String paivitaValmistaja(@PathVariable("id") Long valmistajaId, @ModelAttribute Valmistaja muokattavaValmistaja) {
+    muokattavaValmistaja.setValmistajaId(valmistajaId);
+    valmistajaService.paivitaValmistaja(valmistajaId, muokattavaValmistaja);
+    return "redirect:/valmistajat";
+}
+
 
 // Poista valmistaja
-@DeleteMapping("/valmistajat/{id}")
-public ResponseEntity<Void> poistaValmistaja(@PathVariable("id") Long valmistajaId) {
-    if (valmistajarepo.existsById(valmistajaId)) {
-        valmistajarepo.deleteById(valmistajaId);
-        return ResponseEntity.noContent().build();
-        } else {
-        return ResponseEntity.notFound().build();
-        }
+@DeleteMapping("/poista/{id}")
+public String poistaValmistaja(@PathVariable("id") Long valmistajaId, Model model) {
+    if (valmistajaService.poistaValmistaja(valmistajaId)) {
+        return "redirect:/valmistajat";
+    } else {
+        model.addAttribute("errorMessage", "Valmistajaa ei löydy");
+        return "valmistajatLista";
+    }
 }
 
 

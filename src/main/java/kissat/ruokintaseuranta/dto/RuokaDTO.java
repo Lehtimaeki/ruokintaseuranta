@@ -1,13 +1,23 @@
 package kissat.ruokintaseuranta.dto;
 
-import java.util.List;
+import java.util.Set;
 
 public class RuokaDTO {
+
     private Long ruokaId;
     private String ruokaNimi;
-    private List<String> raakaaineet;
-    private String valmistaja;
-    private double ruokaPisteet;
+    private Long valmistajaId;
+    private Set<Long> raakaaineIds;
+
+    public RuokaDTO() {
+    }
+
+    public RuokaDTO(Long ruokaId, String ruokaNimi, Long valmistajaId, Set<Long> raakaaineIds) {
+        this.ruokaId = ruokaId;
+        this.ruokaNimi = ruokaNimi;
+        this.valmistajaId = valmistajaId;
+        this.raakaaineIds = raakaaineIds;
+    }
 
     public Long getRuokaId() {
         return ruokaId;
@@ -25,27 +35,29 @@ public class RuokaDTO {
         this.ruokaNimi = ruokaNimi;
     }
 
-    public List<String> getRaakaaineet() {
-        return raakaaineet;
+    public Long getValmistajaId() {
+        return valmistajaId;
     }
 
-    public void setRaakaaineet(List<String> raakaaineet) {
-        this.raakaaineet = raakaaineet;
+    public void setValmistajaId(Long valmistajaId) {
+        this.valmistajaId = valmistajaId;
     }
 
-    public String getValmistaja() {
-        return valmistaja;
+    public Set<Long> getRaakaaineIds() {
+        return raakaaineIds;
     }
 
-    public void setValmistaja(String valmistaja) {
-        this.valmistaja = valmistaja;
+    public void setRaakaaineIds(Set<Long> raakaaineIds) {
+        this.raakaaineIds = raakaaineIds;
     }
 
-    public double getRuokaPisteet() {
-        return ruokaPisteet;
-    }
-
-    public void setRuokaPisteet(double ruokaPisteet) {
-        this.ruokaPisteet = ruokaPisteet;
+    @Override
+    public String toString() {
+        return "RuokaDTO{" +
+                "ruokaId=" + ruokaId +
+                ", ruokaNimi='" + ruokaNimi + '\'' +
+                ", valmistajaId=" + valmistajaId +
+                ", raakaaineIds=" + raakaaineIds +
+                '}';
     }
 }
