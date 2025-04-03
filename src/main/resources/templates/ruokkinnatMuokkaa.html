@@ -29,10 +29,10 @@
     <div th:if="${errorMessage}" style="color: red;">
         <p th:text="${errorMessage}"></p>
     </div>
-    <form th:action="@{/muokkaa/{id}(id=${ruokinta.ruokintaId})}" th:object="${ruokinta}" method="post">
+    <form th:action="@{/ruokinnat/muokkaa/{id}(id=${ruokinta.ruokintaId})}" th:object="${ruokinta}" method="post">
         <input type="hidden" name="_method" value="patch"/>
         <label for="ruokintaAika">Ajankohta:</label>
-        <input type="date" id="ruokintaAika" th:field="*{ruokintaAika}" required>
+        <input type="date" id="ruokintaAika" th:field="*{ruokintaAika}" th:value="${ruokinta.ruokintaAika}" required>
         <br>
         <label for="ateria">Ateria:</label>
         <select id="ateria" th:field="*{ateria.ateriaId}" required>
@@ -43,6 +43,12 @@
         <select id="ruoka" th:field="*{ruoka.ruokaId}" required>
             <option th:each="ruoka : ${ruoat}" th:value="${ruoka.ruokaId}" th:text="${ruoka.ruokaNimi}"></option>
         </select>
+        <br>
+        <label for="taimiMaistui">Taimille maistui:</label>
+        <input type="checkbox" id="taimiMaistui" name="taimiMaistui" th:field="*{taimiMaistui}" th:checked="${ruokinta.taimiMaistui}"/>
+        <br>
+        <label for="lempiMaistui">Lempille maistui:</label>
+        <input type="checkbox" id="lempiMaistui" name="lempiMaistui" th:field="*{lempiMaistui}" th:checked="${ruokinta.lempiMaistui}"/>
         <br>
         <button type="submit">Päivitä</button>
     </form>

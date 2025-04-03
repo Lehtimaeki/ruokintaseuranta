@@ -95,7 +95,7 @@
 
     <!-- Uuden ruokinnan lisäys -->
     <h2>Lisää uusi ruokinta</h2>
-    <form th:action="@{/lisaa}" th:object="${ruokinta}" method="post">
+    <form th:action="@{/ruokinnat/lisaa}" th:object="${ruokinta}" method="post">
         <label for="ruokintaAika">Päivämäärä:</label>
         <input type="date" id="ruokintaAika" name="ruokintaAika" th:field="*{ruokintaAika}" required />
         <br/>
@@ -111,10 +111,10 @@
             <option th:each="ruoka : ${ruoat}" th:value="${ruoka.ruokaId}" th:text="${ruoka.ruokaNimi}"></option>
         </select>
         <br/>
-        <label for="taimiMaistui">Taimi maistui:</label>
+        <label for="taimiMaistui">Taimille maistui:</label>
         <input type="checkbox" id="taimiMaistui" name="taimiMaistui" th:field="*{taimiMaistui}"/>
         <br/>
-        <label for="lempiMaistui">Lempi maistui:</label>
+        <label for="lempiMaistui">Lempille maistui:</label>
         <input type="checkbox" id="lempiMaistui" name="lempiMaistui" th:field="*{lempiMaistui}"/>
         <br/>
         <button type="submit">Lisää</button>

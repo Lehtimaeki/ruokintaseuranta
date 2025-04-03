@@ -37,7 +37,7 @@ public class Ruokinta {
     @JoinColumn(name = "ateria_id")
     private Ateria ateria;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "ruoka_id")
     private Ruoka ruoka;
 

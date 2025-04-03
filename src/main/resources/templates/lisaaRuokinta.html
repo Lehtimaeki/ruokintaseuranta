@@ -8,7 +8,7 @@
     <div th:if="${errorMessage}" style="color: red;">
         <p th:text="${errorMessage}"></p>
     </div>
-    <form th:action="@{/lisaa}" th:object="${ruokinta}" method="post">
+    <form th:action="@{/ruokinnat/lisaa}" th:object="${ruokinta}" method="post">
         <label for="ruokintaAika">Ajankohta:</label>
         <input type="date" id="ruokintaAika" th:field="*{ruokintaAika}" required>
         <br>
