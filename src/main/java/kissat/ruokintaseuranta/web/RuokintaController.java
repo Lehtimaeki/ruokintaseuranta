@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,8 +14,9 @@ import org.springframework.security.core.userdetails.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import java.util.Map;
+
+import jakarta.validation.Valid;
 
 import kissat.ruokintaseuranta.domain.Ruoka;
 import kissat.ruokintaseuranta.domain.Ruokinta;
@@ -64,7 +66,7 @@ public class RuokintaController {
 
     @PostMapping("/lisaa")
     @PreAuthorize("hasRole('ADMIN')")
-    public String lisaaRuokinta(@ModelAttribute Ruokinta uusiRuokinta, Model model) {
+    public String lisaaRuokinta(@Valid @ModelAttribute Ruokinta uusiRuokinta, BindingResult result, Model model) {
         try {
             ruokintaService.uusiRuokinta(uusiRuokinta);
             return "redirect:/ruokinnat";
@@ -111,7 +113,7 @@ public String naytaMuokkausLomake(@PathVariable("id") Long ruokintaId, Model mod
 
 @PatchMapping("/muokkaa/{id}")
 @PreAuthorize("hasRole('ADMIN')")
-public String paivitaRuokinta(@PathVariable("id") Long ruokintaId, @ModelAttribute Ruokinta paivitettyRuokinta, Model model) {
+public String paivitaRuokinta(@PathVariable("id") Long ruokintaId, @Valid @ModelAttribute Ruokinta paivitettyRuokinta, BindingResult result, Model model) {
     try {
         ruokintaService.paivitaRuokinta(ruokintaId, paivitettyRuokinta);
         return "redirect:/ruokinnat";

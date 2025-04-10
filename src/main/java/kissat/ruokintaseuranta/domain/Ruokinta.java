@@ -13,6 +13,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.CascadeType;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 
 @Entity
 @Table(name="Ruokinta")
@@ -23,7 +25,9 @@ public class Ruokinta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ruokinta_id")
     private Long ruokintaId;
-    
+
+    @NotNull(message = "Ruokinta-aika ei saa olla tyhjä")
+    @PastOrPresent(message = "Ruokinta-aika ei voi olla tulevaisuudessa")
     @Column(name="ruokinta_aika", nullable = false)
     private LocalDate ruokintaAika;
     
@@ -33,10 +37,14 @@ public class Ruokinta {
     @Column(name="lempi_maistui", nullable = false)
     private boolean lempiMaistui;
 
+    
+    @NotNull(message = "Ateria ei saa olla tyhjä")
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "ateria_id")
     private Ateria ateria;
 
+    
+    @NotNull(message = "Ruoka ei saa olla tyhjä")
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "ruoka_id")
     private Ruoka ruoka;
