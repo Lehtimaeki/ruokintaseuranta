@@ -32,6 +32,9 @@
         <input type="hidden" th:field="*{ruokaId}">
         <label for="ruokaNimi">Ruoka:</label>
         <input type="text" id="ruokaNimi" name="ruokaNimi" th:field="*{ruokaNimi}" required>
+        <div th:if="${#fields.hasErrors('ruokaNimi')}" class="error">
+            <span>th:errors="*{ruokaNimi}"></span>
+        </div>
         <br>
         <label for="valmistaja">Valmistaja:</label>
         <select id="valmistaja" th:field="*{valmistaja.valmistajaId}" required>
