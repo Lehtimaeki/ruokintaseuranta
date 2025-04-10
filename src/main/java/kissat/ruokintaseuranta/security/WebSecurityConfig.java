@@ -11,6 +11,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.List;
@@ -22,11 +23,17 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        SavedRequestAwareAuthenticationSuccessHandler successHandler = 
+        new SavedRequestAwareAuthenticationSuccessHandler();
+        successHandler.setUseReferer(true);
+
         http
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/kirjaudu", "/kirjauduulos").permitAll()
                 .requestMatchers("/ruokinnat").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/ruokinnat/**").hasRole("ADMIN")
+                .requestMatchers("/ruoat").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/ruoat/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

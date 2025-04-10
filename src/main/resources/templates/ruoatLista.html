@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Kissojen ruokakirjasto</title>
 
@@ -45,6 +46,10 @@
 <body>
     <h1>Kissojen ruokakirjasto</h1>
     
+    <div class="link">
+        <a th:href="@{/kirjaudu}">Kirjaudu sisään</a>
+    </div>
+
     <!-- Lomake uuden ruoan lisäämiseksi -->
     <h2>Lisää uusi ruoka</h2>
     <form th:action="@{/ruoat/lisaa}" th:object="${ruoka}" method="post">

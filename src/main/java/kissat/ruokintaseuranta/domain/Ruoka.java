@@ -18,6 +18,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
+import jakarta.validation.constraints.NotBlank;
+
+import jakarta.validation.constraints.Size;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Entity
@@ -30,6 +34,8 @@ public class Ruoka {
     @Column(name = "ruoka_id")
     private Long ruokaId;
     
+    @NotBlank(message = "Ruoan nimi ei voi olla tyhjä")
+    @Size(max = 500, message = "Ruoan nimi saa olla enintään 500 merkkiä pitkä")
     @Column(name="ruoka_nimi", nullable = false)
     private String ruokaNimi;
 

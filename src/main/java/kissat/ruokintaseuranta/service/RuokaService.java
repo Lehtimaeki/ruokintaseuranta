@@ -15,6 +15,11 @@ import java.util.stream.StreamSupport;
 import java.util.Optional;
 import java.util.Set;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+
 @Service
 @Transactional
 public class RuokaService {
@@ -31,7 +36,7 @@ public class RuokaService {
     }
 
     @Transactional
-    public Ruoka tallennaRuoka(Ruoka ruoka) {
+    public Ruoka tallennaRuoka(@Valid Ruoka ruoka) {
         return ruokaRepository.save(ruoka);
     }
 
@@ -40,7 +45,10 @@ public class RuokaService {
     }
 
     @Transactional
-    public Optional<Ruoka> paivitaRuoka(Long ruokaId, String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet) {
+    public Optional<Ruoka> paivitaRuoka(Long ruokaId,
+                                        @Valid @NotBlank(message = "Ruoan nimi ei voi olla tyhjä") 
+                                        @Size(max = 500, message = "Ruoan nimi saa olla enintään 500 merkkiä pitkä") 
+                                        String ruokaNimi, Valmistaja valmistaja, Set<Raakaaine> raakaaineet) {
         return ruokaRepository.findById(ruokaId).map(ruoka -> {
             ruoka.setRuokaNimi(ruokaNimi);
             ruoka.setValmistaja(valmistaja);
